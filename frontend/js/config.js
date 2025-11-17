@@ -4,12 +4,11 @@ const API_CONFIG = {
     // For local development (same computer)
     LOCAL_URL: 'http://localhost:3000',
     
-    // For network access (other devices on same WiFi)
-    // Replace YOUR_IP with the IP shown when server starts
-    NETWORK_URL: 'http://YOUR_IP:3000',
+    // For cloud deployment (accessible from anywhere)
+    NETWORK_URL: 'https://artnest-backend-fdk6.onrender.com',
     
-    // Current mode - change to 'NETWORK_URL' for other devices
-    CURRENT_MODE: 'LOCAL_URL'
+    // Current mode - set to 'NETWORK_URL' for cloud access
+    CURRENT_MODE: 'NETWORK_URL'
 };
 
 // Get the API base URL
