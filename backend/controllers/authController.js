@@ -53,7 +53,7 @@ const register = async (req, res) => {
 
         // Check if user already exists
         const [existingUsers] = await db.query(
-            'SELECT id FROM users WHERE email = ?',
+            'SELECT id FROM users WHERE email = $1',
             [email]
         );
 
@@ -70,21 +70,21 @@ const register = async (req, res) => {
 
         // Insert user into database
         const [result] = await db.query(
-            'INSERT INTO users (email, password, user_type, full_name, phone) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO users (email, password, user_type, full_name, phone) VALUES ($1, $2, $3, $4, $5) RETURNING id',
             [email, hashedPassword, userType, fullName, phone || null]
         );
 
-        const userId = result.insertId;
+        const userId = result[0].id;
 
         // Create profile based on user type
         if (userType === 'artist') {
             await db.query(
-                'INSERT INTO artist_profiles (user_id) VALUES (?)',
+                'INSERT INTO artist_profiles (user_id) VALUES ($1)',
                 [userId]
             );
         } else {
             await db.query(
-                'INSERT INTO venue_profiles (user_id) VALUES (?)',
+                'INSERT INTO venue_profiles (user_id) VALUES ($1)',
                 [userId]
             );
         }
@@ -131,7 +131,7 @@ const login = async (req, res) => {
 
         // Find user
         const [users] = await db.query(
-            'SELECT id, email, password, user_type, full_name, profile_pic FROM users WHERE email = ?',
+            'SELECT id, email, password, user_type, full_name, profile_pic FROM users WHERE email = $1',
             [email]
         );
 
@@ -156,7 +156,7 @@ const login = async (req, res) => {
 
         // Update last active
         await db.query(
-            'UPDATE users SET last_active = NOW() WHERE id = ?',
+            'UPDATE users SET last_active = CURRENT_TIMESTAMP WHERE id = $1',
             [user.id]
         );
 
@@ -208,7 +208,7 @@ const verifyToken = async (req, res) => {
 
         // Get user data
         const [users] = await db.query(
-            'SELECT id, email, user_type, full_name, profile_pic FROM users WHERE id = ?',
+            'SELECT id, email, user_type, full_name, profile_pic FROM users WHERE id = $1',
             [userId]
         );
 
@@ -269,7 +269,7 @@ const changePassword = async (req, res) => {
 
         // Get current password hash
         const [users] = await db.query(
-            'SELECT password FROM users WHERE id = ?',
+            'SELECT password FROM users WHERE id = $1',
             [userId]
         );
 
@@ -291,12 +291,12 @@ const changePassword = async (req, res) => {
         }
 
         // Hash new password
-        const saltRounds = 12;
+        const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
         // Update password
         await db.query(
-            'UPDATE users SET password = ? WHERE id = ?',
+            'UPDATE users SET password = $1 WHERE id = $2',
             [hashedPassword, userId]
         );
 
@@ -352,14 +352,19 @@ const updateUser = async (req, res) => {
 
         values.push(userId);
 
+        // Build parameterized query for PostgreSQL
+        const updateQuery = updates.map((update, index) => {
+            return update.replace('?', `$${index + 1}`);
+        }).join(', ');
+
         await db.query(
-            `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+            `UPDATE users SET ${updateQuery} WHERE id = $${values.length}`,
             values
         );
 
         // Get updated user data
         const [users] = await db.query(
-            'SELECT id, email, user_type, full_name, phone, profile_pic FROM users WHERE id = ?',
+            'SELECT id, email, user_type, full_name, phone, profile_pic FROM users WHERE id = $1',
             [userId]
         );
 
@@ -398,7 +403,7 @@ const logout = async (req, res) => {
         const userId = req.user.userId;
 
         await db.query(
-            'UPDATE users SET last_active = NOW() WHERE id = ?',
+            'UPDATE users SET last_active = CURRENT_TIMESTAMP WHERE id = $1',
             [userId]
         );
 
