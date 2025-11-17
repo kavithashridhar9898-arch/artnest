@@ -65,7 +65,7 @@ const register = async (req, res) => {
         }
 
         // Hash password
-        const saltRounds = 12;
+        const saltRounds = 10; // Reduced from 12 for faster performance
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // Insert user into database
