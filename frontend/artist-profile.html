@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Profile - ArtNest</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        body {
+            background: var(--dark-bg);
+            padding-top: 80px;
+        }
+
+        /* Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--darker-bg);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Profile Container */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Cover Photo */
+        .cover-photo {
+            height: 300px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3));
+            border-radius: 12px;
+            margin-bottom: -80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            padding: 100px 2rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            position: relative;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--darker-bg);
+            position: absolute;
+            top: -75px;
+            left: 2rem;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .profile-details h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .genre-badge {
+            padding: 0.5rem 1rem;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            color: var(--primary-purple);
+            font-weight: 500;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-purple);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-section {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .portfolio-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .portfolio-item img,
+        .portfolio-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+        }
+
+        /* Details List */
+        .details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Reviews */
+        .review-card {
+            padding: 1.5rem;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+        }
+
+        .review-rating {
+            color: #fbbf24;
+        }
+
+        .review-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Booking Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-logo">🎤 ArtNest</div>
+        <nav class="header-nav">
+            <a href="browse-artists.html" class="btn btn-secondary">← Back to Browse</a>
+            <a href="venue-dashboard.html" class="btn btn-secondary">Dashboard</a>
+        </nav>
+    </header>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Cover Photo -->
+        <div class="cover-photo">
+            <img id="coverImage" src="" alt="Cover Photo" style="display: none;">
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <img id="profileImage" class="profile-picture" src="" alt="Profile Picture">
+            
+            <div class="profile-info">
+                <div class="profile-details">
+                    <h1 id="artistName">Artist Name</h1>
+                    <div class="profile-meta">
+                        <span class="genre-badge" id="artistGenre">Genre</span>
+                        <div class="rating">
+                            <span>⭐</span>
+                            <span id="artistRating">0.0</span>
+                            <span style="color: var(--text-secondary);" id="reviewCount">(0 reviews)</span>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="statShows">0</div>
+                            <div class="stat-label">Shows</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statExperience">0</div>
+                            <div class="stat-label">Years Exp</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statMedia">0</div>
+                            <div class="stat-label">Media</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="bookBtn">📅 Book Now</button>
+                    <button class="btn btn-secondary" id="messageBtn">💬 Message</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- About Section -->
+                <div class="content-section">
+                    <h3 class="section-title">About</h3>
+                    <p id="artistBio" style="color: var(--text-secondary); line-height: 1.6;">
+                        No bio available.
+                    </p>
+                </div>
+
+                <!-- Portfolio Section -->
+                <div class="content-section" style="margin-top: 2rem;">
+                    <h3 class="section-title">Portfolio</h3>
+                    <div class="portfolio-grid" id="portfolioGrid">
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1/-1;">
+                            No media uploaded yet
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="content-section" style="margin-top: 2rem;">
+                    <h3 class="section-title">Reviews</h3>
+                    <div id="reviewsList">
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            No reviews yet
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Details Section -->
+                <div class="content-section">
+                    <h3 class="section-title">Details</h3>
+                    <div class="details-list">
+                        <div class="detail-item">
+                            <span class="detail-label">Email</span>
+                            <span class="detail-value" id="detailEmail">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone</span>
+                            <span class="detail-value" id="detailPhone">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value" id="detailLocation">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Price Range</span>
+                            <span class="detail-value" id="detailPrice">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duration</span>
+                            <span class="detail-value" id="detailDuration">-</span>
+                        </div>
+                        <div class="detail-item" id="equipmentItem">
+                            <span class="detail-label">Equipment</span>
+                            <span class="detail-value" id="detailEquipment">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📅 Request Booking</h2>
+                <button class="close-modal" id="closeBookingModal">✕</button>
+            </div>
+            <div id="artistInfo" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+                <!-- Artist info will be inserted here -->
+            </div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Event Date *</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Time</label>
+                    <input type="time" id="eventTime">
+                </div>
+                <div class="form-group">
+                    <label>Duration (hours)</label>
+                    <input type="number" id="durationHours" min="1" placeholder="e.g., 4">
+                </div>
+                <div class="form-group">
+                    <label>Budget ($)</label>
+                    <input type="number" id="budget" min="0" placeholder="e.g., 500">
+                </div>
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <input type="text" id="eventType" placeholder="e.g., Wedding, Birthday, Concert">
+                </div>
+                <div class="form-group">
+                    <label>Special Requirements</label>
+                    <textarea id="specialRequirements" placeholder="Any special requirements or equipment needed..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="message" placeholder="Tell the artist about your event..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Send Request</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBooking">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/bookings.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Require authentication
+        ArtNest.requireAuth();
+
+        // Get artist ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const artistId = urlParams.get('id');
+
+        if (!artistId) {
+            ArtNest.showToast('Invalid artist ID', 'error');
+            window.location.href = 'browse-artists.html';
+        }
+
+        let artistData = null;
+        let hasAcceptedBooking = false;
+
+        // Check for accepted booking
+        async function checkAcceptedBooking() {
+            try {
+                const response = await ArtNest.apiRequest('/bookings/sent', {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    // Check if there's an accepted booking with this artist
+                    const acceptedBooking = response.data.find(booking => 
+                        booking.receiver_id == artistId && booking.status === 'accepted'
+                    );
+                    hasAcceptedBooking = !!acceptedBooking;
+                    return hasAcceptedBooking;
+                }
+                return false;
+            } catch (error) {
+                console.error('Error checking bookings:', error);
+                return false;
+            }
+        }
+
+        // Load artist profile
+        async function loadArtistProfile() {
+            try {
+                const response = await ArtNest.apiRequest(`/artists/${artistId}`, {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    artistData = response.data;
+                    displayProfile(artistData);
+                    await loadMedia();
+                    await loadReviews();
+                    // Check booking status asynchronously and update display
+                    checkAcceptedBooking().then(() => {
+                        if (hasAcceptedBooking) {
+                            // Update contact details if booking is accepted
+                            document.getElementById('detailEmail').textContent = artistData.email;
+                            document.getElementById('detailPhone').textContent = artistData.phone || 'Not provided';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading artist profile:', error);
+                ArtNest.showToast('Failed to load artist profile', 'error');
+            }
+        }
+
+        // Display profile
+        function displayProfile(data) {
+            document.getElementById('artistName').textContent = data.stage_name || data.full_name || 'Artist';
+            document.getElementById('artistGenre').textContent = data.genre || 'N/A';
+            document.getElementById('artistRating').textContent = data.rating?.toFixed(1) || '0.0';
+            document.getElementById('artistBio').textContent = data.bio || 'No bio available.';
+            
+            document.getElementById('statShows').textContent = data.total_shows || 0;
+            document.getElementById('statExperience').textContent = data.experience_years || 0;
+            
+            // Show contact details only if booking is accepted
+            if (hasAcceptedBooking) {
+                document.getElementById('detailEmail').textContent = data.email;
+                document.getElementById('detailPhone').textContent = data.phone || 'Not provided';
+            } else {
+                document.getElementById('detailEmail').innerHTML = '<span style="color: var(--text-secondary); font-style: italic;">📅 Book to view</span>';
+                document.getElementById('detailPhone').innerHTML = '<span style="color: var(--text-secondary); font-style: italic;">📅 Book to view</span>';
+            }
+            document.getElementById('detailLocation').textContent = data.city || 'Not provided';
+            document.getElementById('detailPrice').textContent = data.price_range || 'Contact for pricing';
+            document.getElementById('detailDuration').textContent = data.performance_duration || 'Flexible';
+            document.getElementById('detailEquipment').textContent = data.equipment_provided ? 'Provided' : 'Not provided';
+
+            // Update images if available
+            if (data.profile_pic) {
+                document.getElementById('profileImage').src = `http://localhost:3000${data.profile_pic}`;
+            } else {
+                document.getElementById('profileImage').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.stage_name || data.full_name)}&size=150&background=8B5CF6&color=fff`;
+            }
+
+            if (data.cover_photo) {
+                const coverImg = document.getElementById('coverImage');
+                coverImg.src = `http://localhost:3000${data.cover_photo}`;
+                coverImg.style.display = 'block';
+            }
+        }
+
+        // Load media
+        async function loadMedia() {
+            try {
+                const response = await ArtNest.apiRequest(`/media/user/${artistId}`, {
+                    method: 'GET'
+                });
+                
+                if (response.success && response.data.length > 0) {
+                    const grid = document.getElementById('portfolioGrid');
+                    grid.innerHTML = response.data.slice(0, 9).map(item => `
+                        <div class="portfolio-item">
+                            ${item.media_type === 'video' ? `
+                                <video src="http://localhost:3000${item.file_url}"></video>
+                                <div class="play-overlay">▶️</div>
+                            ` : `
+                                <img src="http://localhost:3000${item.file_url}" alt="Media">
+                            `}
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('statMedia').textContent = response.data.length;
+                }
+            } catch (error) {
+                console.error('Error loading media:', error);
+            }
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const response = await ArtNest.apiRequest(`/artists/${artistId}/reviews`, {
+                    method: 'GET'
+                });
+                
+                if (response.success && response.data.length > 0) {
+                    displayReviews(response.data);
+                    document.getElementById('reviewCount').textContent = `(${response.data.length} reviews)`;
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        // Display reviews
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviewsList');
+            container.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <span class="reviewer-name">${review.reviewer_name || 'Anonymous'}</span>
+                        <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
+                    </div>
+                    <p class="review-text">${review.review_text || ''}</p>
+                    <small style="color: var(--text-secondary);">${ArtNest.formatDate(review.created_at)}</small>
+                </div>
+            `).join('');
+        }
+
+        // Booking modal handlers
+        const bookingModal = document.getElementById('bookingModal');
+        const bookingForm = document.getElementById('bookingForm');
+
+        document.getElementById('bookBtn').addEventListener('click', () => {
+            if (artistData) {
+                document.getElementById('artistInfo').innerHTML = `
+                    <strong>Booking Artist:</strong> ${artistData.stage_name || artistData.full_name}
+                `;
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('eventDate').min = today;
+                bookingModal.classList.add('active');
+            }
+        });
+
+        document.getElementById('closeBookingModal').addEventListener('click', () => {
+            bookingModal.classList.remove('active');
+            bookingForm.reset();
+        });
+
+        document.getElementById('cancelBooking').addEventListener('click', () => {
+            bookingModal.classList.remove('active');
+            bookingForm.reset();
+        });
+
+        bookingModal.addEventListener('click', (e) => {
+            if (e.target === bookingModal) {
+                bookingModal.classList.remove('active');
+                bookingForm.reset();
+            }
+        });
+
+        // Handle booking form submission
+        bookingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bookingData = {
+                receiverId: artistId,
+                requestType: 'venue_to_artist',
+                eventDate: document.getElementById('eventDate').value,
+                eventTime: document.getElementById('eventTime').value || null,
+                durationHours: document.getElementById('durationHours').value || null,
+                budget: document.getElementById('budget').value || null,
+                eventType: document.getElementById('eventType').value || null,
+                specialRequirements: document.getElementById('specialRequirements').value || null,
+                message: document.getElementById('message').value || null
+            };
+
+            try {
+                const response = await BookingManager.create(bookingData);
+                if (response.success) {
+                    bookingModal.classList.remove('active');
+                    bookingForm.reset();
+                    ArtNest.showToast('Booking request sent! You can chat with the artist once they accept.', 'success');
+                }
+            } catch (error) {
+                console.error('Error creating booking:', error);
+            }
+        });
+
+        // Message button - redirect to chat
+        document.getElementById('messageBtn').addEventListener('click', async () => {
+            if (!hasAcceptedBooking) {
+                ArtNest.showToast('You need an accepted booking to message this artist. Please send a booking request first.', 'error');
+                return;
+            }
+            window.location.href = `chat.html?userId=${artistId}`;
+        });
+
+        // Initialize
+        loadArtistProfile();
+    </script>
+</body>
+</html>

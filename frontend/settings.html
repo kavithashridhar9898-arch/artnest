@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ArtNest</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🎵</span>
+                <span class="logo-text">ArtNest</span>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar-wrapper">
+                    <img src="https://via.placeholder.com/80" alt="Profile" class="user-avatar" id="sidebarAvatar">
+                    <span class="online-status"></span>
+                </div>
+                <h3 class="user-name" id="sidebarName">User Name</h3>
+                <p class="user-email" id="sidebarEmail">user@email.com</p>
+            </div>
+
+            <nav class="nav-menu">
+                <ul>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="dashboardLink">
+                            <span class="nav-icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="profile.html" class="nav-link">
+                            <span class="nav-icon">👤</span>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="chat.html" class="nav-link">
+                            <span class="nav-icon">💬</span>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link active">
+                            <span class="nav-icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="logoutLink">
+                            <span class="nav-icon">🚪</span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h1>⚙️ Settings</h1>
+                    <p>Manage your account settings and preferences</p>
+                </div>
+
+                <!-- Settings Tabs -->
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="account">👤 Account</button>
+                    <button class="tab-btn" data-tab="security">🔒 Security</button>
+                    <button class="tab-btn" data-tab="notifications">🔔 Notifications</button>
+                    <button class="tab-btn" data-tab="privacy">🛡️ Privacy</button>
+                    <button class="tab-btn" data-tab="preferences">🎨 Preferences</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="settings-content">
+                    <!-- Account Tab -->
+                    <div class="tab-content active" id="account-tab">
+                        <div class="settings-section">
+                            <h2>Account Information</h2>
+                            <p class="section-description">Update your account details</p>
+
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" id="fullName" class="form-control" placeholder="Enter your full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" class="form-control" placeholder="your@email.com" readonly>
+                                <small class="form-text">Email cannot be changed</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" class="form-control" placeholder="+1 (555) 123-4567">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Account Type</label>
+                                <div class="readonly-field" id="userType">Loading...</div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveAccountBtn">💾 Save Changes</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-section danger-zone">
+                            <h2>Danger Zone</h2>
+                            <p class="section-description">Irreversible actions</p>
+                            
+                            <button class="btn-danger" id="deleteAccountBtn">🗑️ Delete Account</button>
+                        </div>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div class="tab-content" id="security-tab">
+                        <div class="settings-section">
+                            <h2>Change Password</h2>
+                            <p class="section-description">Update your password to keep your account secure</p>
+
+                            <div class="form-group">
+                                <label for="currentPassword">Current Password</label>
+                                <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
+                                <div class="password-strength" id="passwordStrength"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm New Password</label>
+                                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm new password">
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" id="changePasswordBtn">🔑 Change Password</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h2>Two-Factor Authentication</h2>
+                            <p class="section-description">Add an extra layer of security</p>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Enable 2FA</h3>
+                                    <p>Protect your account with two-factor authentication</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="enable2FA">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Tab -->
+                    <div class="tab-content" id="notifications-tab">
+                        <div class="settings-section">
+                            <h2>Email Notifications</h2>
+                            <p class="section-description">Choose what emails you want to receive</p>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Booking Requests</h3>
+                                    <p>Get notified when someone wants to book you</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifyBookingRequests" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Booking Confirmations</h3>
+                                    <p>Receive confirmation when bookings are accepted</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifyBookingConfirmations" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>New Messages</h3>
+                                    <p>Get notified about new chat messages</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifyMessages" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Reviews & Ratings</h3>
+                                    <p>Know when someone rates or reviews your service</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifyReviews" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Marketing Emails</h3>
+                                    <p>Receive updates, tips, and promotional content</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifyMarketing">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveNotificationsBtn">💾 Save Preferences</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Tab -->
+                    <div class="tab-content" id="privacy-tab">
+                        <div class="settings-section">
+                            <h2>Privacy Settings</h2>
+                            <p class="section-description">Control your privacy and visibility</p>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Show Profile to Public</h3>
+                                    <p>Allow anyone to view your profile</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="publicProfile" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Show Email Address</h3>
+                                    <p>Display your email on your public profile</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="showEmail">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Show Phone Number</h3>
+                                    <p>Display your phone number on your public profile</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="showPhone">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Show Online Status</h3>
+                                    <p>Let others see when you're online</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="showOnlineStatus" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" id="savePrivacyBtn">💾 Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences Tab -->
+                    <div class="tab-content" id="preferences-tab">
+                        <div class="settings-section">
+                            <h2>Display Preferences</h2>
+                            <p class="section-description">Customize your experience</p>
+
+                            <div class="form-group">
+                                <label for="language">Language</label>
+                                <select id="language" class="form-control">
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="fr">Français</option>
+                                    <option value="de">Deutsch</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone" class="form-control">
+                                    <option value="UTC">UTC (GMT+0)</option>
+                                    <option value="America/New_York">Eastern Time (GMT-5)</option>
+                                    <option value="America/Chicago">Central Time (GMT-6)</option>
+                                    <option value="America/Denver">Mountain Time (GMT-7)</option>
+                                    <option value="America/Los_Angeles">Pacific Time (GMT-8)</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Dark Mode</h3>
+                                    <p>Use dark theme for reduced eye strain</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="darkMode" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h3>Animations</h3>
+                                    <p>Enable smooth animations and transitions</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="enableAnimations" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" id="savePreferencesBtn">💾 Save Preferences</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal" id="deleteAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Delete Account</h3>
+                <button class="modal-close" id="closeDeleteModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--error-red); margin-bottom: 1rem;">This action cannot be undone!</p>
+                <p>All your data including bookings, messages, and profile information will be permanently deleted.</p>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label for="deleteConfirmPassword">Enter your password to confirm</label>
+                    <input type="password" id="deleteConfirmPassword" class="form-control" placeholder="Your password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button class="btn-danger" id="confirmDeleteBtn">Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .settings-header {
+            margin-bottom: 2rem;
+        }
+
+        .settings-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .settings-header p {
+            color: var(--text-secondary);
+        }
+
+        .settings-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.1);
+            overflow-x: auto;
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-purple);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-purple);
+            border-bottom-color: var(--primary-purple);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .settings-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .settings-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-control:readonly {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-text {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .readonly-field {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .setting-info p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Password Strength */
+        .password-strength {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .password-strength::before {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength.weak::before {
+            width: 33%;
+            background: var(--error-red);
+        }
+
+        .password-strength.medium::before {
+            width: 66%;
+            background: var(--accent-yellow);
+        }
+
+        .password-strength.strong::before {
+            width: 100%;
+            background: var(--success-green);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary, .btn-secondary, .btn-danger {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .settings-container {
+                padding: 1rem;
+            }
+
+            .settings-tabs {
+                gap: 0.5rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .settings-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Require authentication
+        ArtNest.requireAuth();
+
+        const user = JSON.parse(localStorage.getItem('artnet_user'));
+        const userType = user?.userType;
+
+        // Update sidebar
+        document.getElementById('sidebarName').textContent = user?.fullName || 'User';
+        document.getElementById('sidebarEmail').textContent = user?.email || '';
+        if (user?.profilePic) {
+            document.getElementById('sidebarAvatar').src = user.profilePic;
+        }
+
+        // Dashboard link
+        document.getElementById('dashboardLink').href = userType === 'artist' ? 'artist-dashboard.html' : 'venue-dashboard.html';
+
+        // Logout
+        document.getElementById('logoutLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            ArtNest.logout();
+        });
+
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const response = await ArtNest.apiRequest('/auth/verify', {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    const userData = response.data;
+                    document.getElementById('fullName').value = userData.fullName || '';
+                    document.getElementById('email').value = userData.email || '';
+                    document.getElementById('phone').value = userData.phone || '';
+                    document.getElementById('userType').textContent = userData.userType === 'artist' ? '🎵 Artist' : '🏛️ Venue';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Load settings
+        async function loadSettings() {
+            try {
+                const response = await ArtNest.apiRequest('/settings', {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    const settings = response.data;
+                    
+                    // Notifications
+                    document.getElementById('notifyBookingRequests').checked = settings.notify_booking_requests ?? true;
+                    document.getElementById('notifyBookingConfirmations').checked = settings.notify_booking_confirmations ?? true;
+                    document.getElementById('notifyMessages').checked = settings.notify_messages ?? true;
+                    document.getElementById('notifyReviews').checked = settings.notify_reviews ?? true;
+                    document.getElementById('notifyMarketing').checked = settings.notify_marketing ?? false;
+                    
+                    // Privacy
+                    document.getElementById('publicProfile').checked = settings.public_profile ?? true;
+                    document.getElementById('showEmail').checked = settings.show_email ?? false;
+                    document.getElementById('showPhone').checked = settings.show_phone ?? false;
+                    document.getElementById('showOnlineStatus').checked = settings.show_online_status ?? true;
+                    
+                    // Preferences
+                    document.getElementById('language').value = settings.language || 'en';
+                    document.getElementById('timezone').value = settings.timezone || 'UTC';
+                    document.getElementById('darkMode').checked = settings.dark_mode ?? true;
+                    document.getElementById('enableAnimations').checked = settings.enable_animations ?? true;
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        // Save account info
+        document.getElementById('saveAccountBtn').addEventListener('click', async () => {
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!fullName) {
+                ArtNest.showToast('Please enter your full name', 'error');
+                return;
+            }
+
+            try {
+                const response = await ArtNest.apiRequest('/auth/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ fullName, phone })
+                });
+
+                if (response.success) {
+                    // Update localStorage
+                    user.fullName = fullName;
+                    user.phone = phone;
+                    localStorage.setItem('artnet_user', JSON.stringify(user));
+                    
+                    ArtNest.showToast('Account updated successfully!', 'success');
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to update account', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating account:', error);
+                ArtNest.showToast('Failed to update account', 'error');
+            }
+        });
+
+        // Change password
+        document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                ArtNest.showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                ArtNest.showToast('New password must be at least 6 characters', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                ArtNest.showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                const response = await ArtNest.apiRequest('/auth/change-password', {
+                    method: 'PUT',
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                if (response.success) {
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    ArtNest.showToast('Password changed successfully!', 'success');
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to change password', 'error');
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                ArtNest.showToast('Failed to change password', 'error');
+            }
+        });
+
+        // Password strength indicator
+        document.getElementById('newPassword').addEventListener('input', (e) => {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('passwordStrength');
+
+            if (password.length === 0) {
+                strengthBar.className = 'password-strength';
+            } else if (password.length < 6) {
+                strengthBar.className = 'password-strength weak';
+            } else if (password.length < 10) {
+                strengthBar.className = 'password-strength medium';
+            } else {
+                strengthBar.className = 'password-strength strong';
+            }
+        });
+
+        // Save notifications
+        document.getElementById('saveNotificationsBtn').addEventListener('click', async () => {
+            const settings = {
+                notify_booking_requests: document.getElementById('notifyBookingRequests').checked,
+                notify_booking_confirmations: document.getElementById('notifyBookingConfirmations').checked,
+                notify_messages: document.getElementById('notifyMessages').checked,
+                notify_reviews: document.getElementById('notifyReviews').checked,
+                notify_marketing: document.getElementById('notifyMarketing').checked
+            };
+
+            try {
+                const response = await ArtNest.apiRequest('/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify(settings)
+                });
+
+                if (response.success) {
+                    ArtNest.showToast('Notification preferences saved!', 'success');
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to save preferences', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving notifications:', error);
+                ArtNest.showToast('Failed to save preferences', 'error');
+            }
+        });
+
+        // Save privacy settings
+        document.getElementById('savePrivacyBtn').addEventListener('click', async () => {
+            const settings = {
+                public_profile: document.getElementById('publicProfile').checked,
+                show_email: document.getElementById('showEmail').checked,
+                show_phone: document.getElementById('showPhone').checked,
+                show_online_status: document.getElementById('showOnlineStatus').checked
+            };
+
+            try {
+                const response = await ArtNest.apiRequest('/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify(settings)
+                });
+
+                if (response.success) {
+                    ArtNest.showToast('Privacy settings saved!', 'success');
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to save settings', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving privacy:', error);
+                ArtNest.showToast('Failed to save settings', 'error');
+            }
+        });
+
+        // Save preferences
+        document.getElementById('savePreferencesBtn').addEventListener('click', async () => {
+            const settings = {
+                language: document.getElementById('language').value,
+                timezone: document.getElementById('timezone').value,
+                dark_mode: document.getElementById('darkMode').checked,
+                enable_animations: document.getElementById('enableAnimations').checked
+            };
+
+            try {
+                const response = await ArtNest.apiRequest('/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify(settings)
+                });
+
+                if (response.success) {
+                    ArtNest.showToast('Preferences saved!', 'success');
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to save preferences', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                ArtNest.showToast('Failed to save preferences', 'error');
+            }
+        });
+
+        // Delete account modal
+        const deleteModal = document.getElementById('deleteAccountModal');
+        
+        document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+            deleteModal.classList.add('active');
+        });
+
+        document.getElementById('closeDeleteModal').addEventListener('click', () => {
+            deleteModal.classList.remove('active');
+            document.getElementById('deleteConfirmPassword').value = '';
+        });
+
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+            deleteModal.classList.remove('active');
+            document.getElementById('deleteConfirmPassword').value = '';
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            const password = document.getElementById('deleteConfirmPassword').value;
+
+            if (!password) {
+                ArtNest.showToast('Please enter your password', 'error');
+                return;
+            }
+
+            if (!confirm('Are you absolutely sure? This cannot be undone!')) {
+                return;
+            }
+
+            try {
+                const response = await ArtNest.apiRequest('/auth/delete-account', {
+                    method: 'DELETE',
+                    body: JSON.stringify({ password })
+                });
+
+                if (response.success) {
+                    ArtNest.showToast('Account deleted successfully', 'success');
+                    setTimeout(() => {
+                        localStorage.clear();
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to delete account', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                ArtNest.showToast('Failed to delete account', 'error');
+            }
+        });
+
+        // Initialize
+        loadUserData();
+        loadSettings();
+    </script>
+</body>
+</html>

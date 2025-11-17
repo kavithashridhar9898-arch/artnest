@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Artists - ArtNest</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        body {
+            background: var(--dark-bg);
+            padding-top: 80px;
+        }
+
+        /* Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--darker-bg);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Browse Container */
+        .browse-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+        }
+
+        /* Filters */
+        .filters-section {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.75rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Artists Grid */
+        .artists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .artist-card {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .artist-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-purple);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .artist-cover {
+            height: 150px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3));
+            position: relative;
+        }
+
+        .artist-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--darker-bg);
+            position: absolute;
+            bottom: -40px;
+            left: 1.5rem;
+            object-fit: cover;
+        }
+
+        .artist-info {
+            padding: 3rem 1.5rem 1.5rem;
+        }
+
+        .artist-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .artist-genre {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--primary-purple);
+            margin-bottom: 0.75rem;
+        }
+
+        .artist-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .artist-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .artist-bio {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .artist-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .artist-actions button {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-book {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+        }
+
+        .btn-book:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-view {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-purple);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-view:hover {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(139, 92, 246, 0.2);
+            border-top-color: var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Booking Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .artists-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-logo">🎤 ArtNest</div>
+        <nav class="header-nav">
+            <a href="venue-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+            <a href="#" id="logoutBtn" class="btn btn-primary">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Browse Container -->
+    <div class="browse-container">
+        <div class="page-header">
+            <h1>🔍 Browse Artists</h1>
+            <p>Discover talented artists for your next event</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Search</label>
+                    <input type="text" id="searchInput" placeholder="Search by name or genre...">
+                </div>
+                <div class="filter-group">
+                    <label>Genre</label>
+                    <select id="genreFilter">
+                        <option value="">All Genres</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Jazz">Jazz</option>
+                        <option value="Hip-Hop">Hip-Hop</option>
+                        <option value="Electronic">Electronic</option>
+                        <option value="Classical">Classical</option>
+                        <option value="Country">Country</option>
+                        <option value="R&B">R&B</option>
+                        <option value="Reggae">Reggae</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Minimum Rating</label>
+                    <select id="ratingFilter">
+                        <option value="">Any Rating</option>
+                        <option value="4.5">4.5+ Stars</option>
+                        <option value="4.0">4.0+ Stars</option>
+                        <option value="3.5">3.5+ Stars</option>
+                        <option value="3.0">3.0+ Stars</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" id="applyFiltersBtn">Apply Filters</button>
+                <button class="btn btn-secondary" id="clearFiltersBtn">Clear</button>
+            </div>
+        </div>
+
+        <!-- Artists Grid -->
+        <div id="artistsGrid" class="artists-grid">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading artists...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📅 Request Booking</h2>
+                <button class="close-modal" id="closeBookingModal">✕</button>
+            </div>
+            <div id="artistInfo" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+                <!-- Artist info will be inserted here -->
+            </div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Event Date *</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Time</label>
+                    <input type="time" id="eventTime">
+                </div>
+                <div class="form-group">
+                    <label>Duration (hours)</label>
+                    <input type="number" id="durationHours" min="1" placeholder="e.g., 4">
+                </div>
+                <div class="form-group">
+                    <label>Budget ($)</label>
+                    <input type="number" id="budget" min="0" placeholder="e.g., 500">
+                </div>
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <input type="text" id="eventType" placeholder="e.g., Wedding, Birthday, Concert">
+                </div>
+                <div class="form-group">
+                    <label>Special Requirements</label>
+                    <textarea id="specialRequirements" placeholder="Any special requirements or equipment needed..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="message" placeholder="Tell the artist about your event..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Send Request</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBooking">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/bookings.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Require authentication
+        ArtNest.requireAuth();
+
+        const currentUser = ArtNest.getCurrentUser();
+        let selectedArtist = null;
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            ArtNest.logout();
+        });
+
+        // Load artists
+        async function loadArtists(filters = {}) {
+            try {
+                const params = new URLSearchParams();
+                if (filters.search) params.append('search', filters.search);
+                if (filters.genre) params.append('genre', filters.genre);
+                if (filters.minRating) params.append('minRating', filters.minRating);
+
+                const response = await ArtNest.apiRequest(`/artists?${params.toString()}`, {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    displayArtists(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading artists:', error);
+                document.getElementById('artistsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: var(--error-red);">Failed to load artists. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display artists
+        function displayArtists(artists) {
+            const grid = document.getElementById('artistsGrid');
+            
+            if (artists.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No artists found</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = artists.map(artist => `
+                <div class="artist-card" data-artist-id="${artist.id}">
+                    <div class="artist-cover">
+                        <img src="${artist.profile_pic ? 'http://localhost:3000' + artist.profile_pic : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(artist.stage_name || artist.full_name) + '&size=80&background=8B5CF6&color=fff'}" 
+                             alt="${artist.stage_name || artist.full_name}" 
+                             class="artist-avatar">
+                    </div>
+                    <div class="artist-info">
+                        <div class="artist-name">${artist.stage_name || artist.full_name}${artist.is_verified ? ' ✓' : ''}</div>
+                        <span class="artist-genre">${artist.genre || 'Artist'}</span>
+                        <div class="artist-stats">
+                            <div class="artist-stat">
+                                <span>⭐</span>
+                                <span>${artist.rating && artist.rating > 0 ? Number(artist.rating).toFixed(1) : 'New'}</span>
+                            </div>
+                            <div class="artist-stat">
+                                <span>🎤</span>
+                                <span>${artist.total_shows || 0} shows</span>
+                            </div>
+                            ${artist.experience_years ? `
+                                <div class="artist-stat">
+                                    <span>📅</span>
+                                    <span>${artist.experience_years}y exp</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        ${artist.bio ? `<p class="artist-bio">${artist.bio}</p>` : ''}
+                        <div class="artist-actions">
+                            <button class="btn-book" onclick="openBookingModal(${artist.id}, '${(artist.stage_name || artist.full_name).replace(/'/g, "\\'")}')">
+                                📅 Book Now
+                            </button>
+                            <button class="btn-view" onclick="viewArtistProfile(${artist.id})">
+                                👁️ View Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open booking modal
+        window.openBookingModal = function(artistId, artistName) {
+            selectedArtist = { id: artistId, name: artistName };
+            document.getElementById('artistInfo').innerHTML = `
+                <strong>Booking Artist:</strong> ${artistName}
+            `;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('eventDate').min = today;
+            document.getElementById('bookingModal').classList.add('active');
+        };
+
+        // View artist profile
+        window.viewArtistProfile = function(artistId) {
+            window.location.href = `artist-profile.html?id=${artistId}`;
+        };
+
+        // Close modal
+        document.getElementById('closeBookingModal').addEventListener('click', () => {
+            document.getElementById('bookingModal').classList.remove('active');
+            document.getElementById('bookingForm').reset();
+        });
+
+        document.getElementById('cancelBooking').addEventListener('click', () => {
+            document.getElementById('bookingModal').classList.remove('active');
+            document.getElementById('bookingForm').reset();
+        });
+
+        document.getElementById('bookingModal').addEventListener('click', (e) => {
+            if (e.target.id === 'bookingModal') {
+                document.getElementById('bookingModal').classList.remove('active');
+                document.getElementById('bookingForm').reset();
+            }
+        });
+
+        // Handle booking form submission
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!selectedArtist) {
+                ArtNest.showToast('Please select an artist', 'error');
+                return;
+            }
+
+            const bookingData = {
+                receiverId: selectedArtist.id,
+                requestType: 'venue_to_artist',
+                eventDate: document.getElementById('eventDate').value,
+                eventTime: document.getElementById('eventTime').value || null,
+                durationHours: document.getElementById('durationHours').value || null,
+                budget: document.getElementById('budget').value || null,
+                eventType: document.getElementById('eventType').value || null,
+                specialRequirements: document.getElementById('specialRequirements').value || null,
+                message: document.getElementById('message').value || null
+            };
+
+            try {
+                const response = await BookingManager.create(bookingData);
+                if (response.success) {
+                    document.getElementById('bookingModal').classList.remove('active');
+                    document.getElementById('bookingForm').reset();
+                    ArtNest.showToast('Booking request sent! You can chat with the artist once they accept.', 'success');
+                }
+            } catch (error) {
+                console.error('Error creating booking:', error);
+            }
+        });
+
+        // Filter handlers
+        document.getElementById('applyFiltersBtn').addEventListener('click', () => {
+            const filters = {
+                search: document.getElementById('searchInput').value,
+                genre: document.getElementById('genreFilter').value,
+                minRating: document.getElementById('ratingFilter').value
+            };
+            loadArtists(filters);
+        });
+
+        document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('genreFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            loadArtists();
+        });
+
+        // Search on enter key
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('applyFiltersBtn').click();
+            }
+        });
+
+        // Initialize
+        loadArtists();
+    </script>
+</body>
+</html>

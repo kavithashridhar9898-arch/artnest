@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - ArtNest</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Conversations Panel -->
+        <div class="conversations-panel">
+            <div class="conversations-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">💬</span> Messages
+                    </h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="icon-btn" id="backToDashboard" title="Back to Dashboard" style="font-size: 1.25rem;">🏠</button>
+                        <button class="icon-btn" onclick="window.location.href='settings.html'" title="Settings" style="font-size: 1.25rem;">⚙️</button>
+                        <button class="icon-btn" id="newChatBtn" title="New Chat" style="font-size: 1.25rem;">✏️</button>
+                    </div>
+                </div>
+                <input type="text" class="search-conversations" id="searchConversations" placeholder="🔍 Search conversations...">
+            </div>
+
+            <div class="conversations-list" id="conversationsList">
+                <div class="loading-state" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    <div class="spinner" style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(139, 92, 246, 0.2); border-top-color: var(--primary-purple); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+                    <p>Loading conversations...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-empty-state" id="emptyState">
+                <div class="chat-empty-icon">💬</div>
+                <h3>Select a conversation</h3>
+                <p>Choose a conversation from the list to start messaging</p>
+            </div>
+
+            <div class="active-chat" id="activeChat" style="display: none; height: 100%; flex-direction: column;">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <button class="mobile-back-btn" id="mobileBackBtn" style="display: none; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary); margin-right: 1rem;">←</button>
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.25rem;" id="chatAvatar">U</div>
+                    <div class="chat-user-info">
+                        <div class="chat-user-name" id="chatUserName">User Name</div>
+                        <div class="chat-user-status" id="chatUserStatus">
+                            <span class="online-indicator" style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-right: 4px;"></span>
+                            <span id="statusText">Online</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-left: auto;">
+                        <button class="icon-btn" id="callBtn" title="Audio Call" style="font-size: 1.25rem;">📞</button>
+                        <button class="icon-btn" id="videoCallBtn" title="Video Call" style="font-size: 1.25rem;">📹</button>
+                        <button class="icon-btn" id="moreBtn" title="More Options" style="font-size: 1.25rem;">⋮</button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be inserted here -->
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1rem;" id="typingAvatar">U</div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <div class="typing-dots" style="display: flex; gap: 4px;">
+                            <span style="width: 8px; height: 8px; background: var(--text-secondary); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: -0.32s;"></span>
+                            <span style="width: 8px; height: 8px; background: var(--text-secondary); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: -0.16s;"></span>
+                            <span style="width: 8px; height: 8px; background: var(--text-secondary); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <button class="chat-action-btn" id="emojiBtn" title="Emoji" style="font-size: 1.25rem;">😊</button>
+                        <button class="chat-action-btn" id="attachBtn" title="Attach File" style="font-size: 1.25rem;">📎</button>
+                        <input type="file" id="fileAttachment" style="display: none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+                        <input 
+                            type="text" 
+                            id="messageInput" 
+                            class="chat-input" 
+                            placeholder="Type a message..."
+                            autocomplete="off"
+                        >
+                        <button class="send-btn" id="sendBtn" title="Send Message">
+                            <span style="font-size: 1.25rem;">➤</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Chat Modal -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Conversation</h3>
+                <button class="modal-close" id="closeNewChatModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box">
+                    <input type="text" id="searchUsers" placeholder="Search users...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="users-list" id="usersList">
+                    <div class="loading-state">
+                        <p>Loading users...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: var(--dark-bg);
+        }
+
+        .chat-container {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            background: var(--dark-bg);
+            overflow: hidden;
+        }
+
+        .conversations-panel {
+            overflow-y: auto;
+        }
+
+        .chat-window {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #activeChat {
+            overflow: hidden;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { 
+                transform: scale(0);
+            } 
+            40% { 
+                transform: scale(1.0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Chat Header */
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .icon-btn:hover {
+            background: rgba(139, 92, 246, 0.3);
+            transform: scale(1.1);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Search Box */
+        .search-box {
+            padding: 1rem 1.5rem;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            color: var(--text-primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(139, 92, 246, 0.2);
+            border-top-color: var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Back Button */
+        .mobile-back-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .users-list {
+            margin-top: 1rem;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-item:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .user-item-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-item-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .user-item-info p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+
+            .conversations-panel {
+                display: block;
+            }
+
+            .chat-window {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .chat-window.active {
+                display: flex;
+            }
+
+            .conversations-panel.hidden {
+                display: none;
+            }
+
+            .mobile-back-btn {
+                display: block;
+            }
+        }
+    </style>
+
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chat.js"></script>
+    <script>
+        // Require authentication
+        ArtNest.requireAuth();
+
+        const user = JSON.parse(localStorage.getItem('artnet_user'));
+        const userType = user?.userType;
+
+        // Back to dashboard
+        document.getElementById('backToDashboard').addEventListener('click', () => {
+            window.location.href = userType === 'artist' ? 'artist-dashboard.html' : 'venue-dashboard.html';
+        });
+
+        // Initialize chat
+        if (window.ChatManager) {
+            ChatManager.init();
+        }
+    </script>
+</body>
+</html>

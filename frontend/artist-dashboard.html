@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Dashboard - ArtNest</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            background: var(--dark-bg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--darker-bg);
+            padding: 2rem 1rem;
+            border-right: 1px solid rgba(139, 92, 246, 0.1);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .sidebar-header h2 {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-purple);
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+            animation: fadeInUp 0.6s ease 0.1s backwards;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            padding: 0.75rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-orange));
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            animation: pulseGlow 2s infinite;
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 400px;
+            max-height: 500px;
+            background: var(--card-bg);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.active {
+            display: flex;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .notification-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .mark-all-read {
+            background: transparent;
+            border: none;
+            color: var(--primary-purple);
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .mark-all-read:hover {
+            text-decoration: underline;
+        }
+
+        .notification-list {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .notification-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .notification-item:hover {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.accepted {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .notification-icon.rejected {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .notification-icon.request {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty {
+            padding: 3rem 1.5rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-purple), var(--primary-blue));
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-teal));
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--accent-teal), var(--success-green));
+        }
+
+        .stat-card:nth-child(4)::before {
+            background: linear-gradient(90deg, var(--primary-pink), var(--accent-orange));
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--success-green);
+        }
+
+        .stat-trend.down {
+            color: var(--error-red);
+        }
+
+        /* Profile Completion */
+        .profile-completion {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
+        }
+
+        .completion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .completion-ring {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .completion-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .completion-ring circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .completion-ring .background {
+            stroke: rgba(139, 92, 246, 0.1);
+        }
+
+        .completion-ring .progress {
+            stroke: url(#gradient);
+            stroke-dasharray: 226;
+            stroke-dashoffset: 226;
+            animation: fillRing 1.5s ease forwards;
+        }
+
+        @keyframes fillRing {
+            to {
+                stroke-dashoffset: var(--progress-offset);
+            }
+        }
+
+        .completion-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.25rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .section-link {
+            color: var(--primary-purple);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .section-link:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Booking Request Card */
+        .booking-card {
+            background: rgba(139, 92, 246, 0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .booking-card:hover {
+            background: rgba(139, 92, 246, 0.1);
+            transform: translateX(5px);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .venue-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .venue-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .booking-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .booking-status.pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .booking-details {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-accept,
+        .btn-reject {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, var(--success-green), var(--accent-teal));
+            color: white;
+        }
+
+        .btn-accept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-reject:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Calendar */
+        .calendar-container {
+            grid-column: 1 / -1;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-header {
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 0.875rem;
+        }
+
+        .calendar-day:hover {
+            background: rgba(139, 92, 246, 0.1);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--primary-pink);
+            animation: pulseGlow 2s infinite;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quick-action {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .quick-action:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .quick-action-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-item {
+                margin-bottom: 0;
+            }
+
+            .nav-link {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎤 ArtNest</h2>
+                <p id="userNameDisplay">Loading...</p>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="artist-dashboard.html" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="profile.html" class="nav-link">
+                            <span class="nav-icon">👤</span>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="media.html" class="nav-link">
+                            <span class="nav-icon">🎵</span>
+                            <span>Media</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="chat.html" class="nav-link">
+                            <span class="nav-icon">💬</span>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="browseVenuesLink">
+                            <span class="nav-icon">🏛️</span>
+                            <span>Browse Venues</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link">
+                            <span class="nav-icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="logoutLink">
+                            <span class="nav-icon">🚪</span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="welcome-section">
+                    <h1 id="welcomeText">Welcome back!</h1>
+                    <p>Here's what's happening with your bookings today</p>
+                </div>
+                <div class="header-actions">
+                    <div style="position: relative;">
+                        <button class="notification-btn" id="notificationBtn">
+                            <span style="font-size: 1.5rem;">🔔</span>
+                            <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+                        </button>
+                        
+                        <!-- Notification Dropdown -->
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>🔔 Notifications</h3>
+                                <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="notification-empty">
+                                    <div class="notification-empty-icon">🔔</div>
+                                    <p>No notifications yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="profile.html" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" style="animation-delay: 0.1s;">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalShows">0</div>
+                            <div class="stat-label">Total Shows</div>
+                        </div>
+                        <div class="stat-icon">🎪</div>
+                    </div>
+                    <div class="stat-trend">
+                        <span>↑ 12%</span>
+                        <span style="color: var(--text-secondary);">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="animation-delay: 0.2s;">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="avgRating">0.0</div>
+                            <div class="stat-label">Average Rating</div>
+                        </div>
+                        <div class="stat-icon">⭐</div>
+                    </div>
+                    <div class="stat-trend">
+                        <span>↑ 0.3</span>
+                        <span style="color: var(--text-secondary);">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="animation-delay: 0.3s;">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalEarnings">$0</div>
+                            <div class="stat-label">Total Earnings</div>
+                        </div>
+                        <div class="stat-icon">💰</div>
+                    </div>
+                    <div class="stat-trend">
+                        <span>↑ 25%</span>
+                        <span style="color: var(--text-secondary);">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="animation-delay: 0.4s;">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="pendingRequests">0</div>
+                            <div class="stat-label">Pending Requests</div>
+                        </div>
+                        <div class="stat-icon">📬</div>
+                    </div>
+                    <div class="stat-trend down">
+                        <span>↓ 2</span>
+                        <span style="color: var(--text-secondary);">vs yesterday</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Completion -->
+            <div class="profile-completion">
+                <div class="completion-header">
+                    <div>
+                        <h3>Complete Your Profile</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                            Add more details to attract venues
+                        </p>
+                    </div>
+                    <div class="completion-ring">
+                        <svg width="80" height="80">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#8B5CF6"/>
+                                    <stop offset="100%" style="stop-color:#3B82F6"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="background" cx="40" cy="40" r="36"/>
+                            <circle class="progress" cx="40" cy="40" r="36" style="--progress-offset: 113"/>
+                        </svg>
+                        <div class="completion-percentage">75%</div>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <a href="profile.html" class="quick-action">
+                        <div class="quick-action-icon">📸</div>
+                        <div class="quick-action-label">Add Photos</div>
+                    </a>
+                    <a href="profile.html" class="quick-action">
+                        <div class="quick-action-icon">📝</div>
+                        <div class="quick-action-label">Update Bio</div>
+                    </a>
+                    <a href="media.html" class="quick-action">
+                        <div class="quick-action-icon">🎵</div>
+                        <div class="quick-action-label">Upload Media</div>
+                    </a>
+                    <a href="profile.html" class="quick-action">
+                        <div class="quick-action-icon">🔗</div>
+                        <div class="quick-action-label">Add Socials</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Booking Requests -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Booking Requests</h3>
+                        <a href="#" class="section-link" id="viewAllRequests">View All →</a>
+                    </div>
+                    <div id="bookingRequestsList">
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            Loading requests...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="section-card calendar-container">
+                    <div class="section-header">
+                        <h3 class="section-title">Upcoming Shows - <span id="calendarMonth">November 2025</span></h3>
+                        <a href="#" class="section-link">View Calendar →</a>
+                    </div>
+                    <div class="calendar" id="calendarGrid">
+                        <!-- Calendar will be generated by JavaScript -->
+                    </div>
+                </div>
+                        <div class="calendar-day other-month">1</div>
+                        <div class="calendar-day other-month">2</div>
+                        <div class="calendar-day other-month">3</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Require authentication
+        ArtNest.requireAuth();
+
+        // Get user data
+        const user = JSON.parse(localStorage.getItem('artnet_user'));
+        if (user && user.userType !== 'artist') {
+            window.location.href = 'venue-dashboard.html';
+        }
+
+        // Update user name
+        if (user) {
+            document.getElementById('userNameDisplay').textContent = user.fullName || user.email;
+            document.getElementById('welcomeText').textContent = `Welcome back, ${user.fullName?.split(' ')[0] || 'Artist'}!`;
+        }
+
+        // Logout handler
+        document.getElementById('logoutLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            ArtNest.logout();
+        });
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Load stats (mock data for now - replace with API calls)
+                const stats = {
+                    totalShows: 24,
+                    avgRating: 4.8,
+                    totalEarnings: 12500,
+                    pendingRequests: 3
+                };
+
+                document.getElementById('totalShows').textContent = stats.totalShows;
+                document.getElementById('avgRating').textContent = stats.avgRating.toFixed(1);
+                document.getElementById('totalEarnings').textContent = `$${stats.totalEarnings.toLocaleString()}`;
+                document.getElementById('pendingRequests').textContent = stats.pendingRequests;
+                document.getElementById('notificationCount').textContent = stats.pendingRequests;
+
+                // Load booking requests
+                await loadBookingRequests();
+                
+                // Load calendar with bookings
+                await loadCalendar();
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                ArtNest.showToast('Failed to load dashboard data', 'error');
+            }
+        }
+
+        // Store bookings globally
+        let calendarBookings = [];
+
+        // Load calendar with accepted bookings
+        async function loadCalendar() {
+            try {
+                // Get all bookings (sent and received)
+                const [sentResponse, receivedResponse] = await Promise.all([
+                    ArtNest.apiRequest('/bookings/sent', { method: 'GET' }),
+                    ArtNest.apiRequest('/bookings/received', { method: 'GET' })
+                ]);
+
+                const allBookings = [
+                    ...(sentResponse.success ? sentResponse.data : []),
+                    ...(receivedResponse.success ? receivedResponse.data : [])
+                ];
+
+                // Filter accepted bookings
+                calendarBookings = allBookings.filter(b => b.status === 'accepted');
+                console.log('Accepted bookings for calendar:', calendarBookings);
+                
+                // Generate calendar
+                generateCalendar(calendarBookings);
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                calendarBookings = [];
+                generateCalendar([]);
+            }
+        }
+
+        // Show booking details for a date
+        function showBookingDetails(dateIso) {
+            const bookingsOnDate = calendarBookings.filter(b => {
+                const bookingDate = new Date(b.event_date).toISOString().split('T')[0];
+                return bookingDate === dateIso;
+            });
+
+            if (bookingsOnDate.length === 0) {
+                return;
+            }
+
+            const booking = bookingsOnDate[0];
+            const modalHtml = `
+                <div class="modal-overlay" onclick="this.remove()" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div class="modal-content" onclick="event.stopPropagation()" style="background: var(--card-bg); border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%; border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <h3 style="margin-top: 0; color: var(--primary-purple);">📅 Booking Details</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-secondary);">Venue:</span>
+                                <span style="font-weight: 600;">${booking.sender_name || booking.receiver_name || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-secondary);">Date:</span>
+                                <span style="font-weight: 600;">${ArtNest.formatDate(booking.event_date)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-secondary);">Time:</span>
+                                <span style="font-weight: 600;">${booking.event_time || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-secondary);">Duration:</span>
+                                <span style="font-weight: 600;">${booking.duration_hours || 'N/A'} hours</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-secondary);">Budget:</span>
+                                <span style="font-weight: 600;">$${booking.budget?.toLocaleString() || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-secondary);">Event Type:</span>
+                                <span style="font-weight: 600;">${booking.event_type || 'N/A'}</span>
+                            </div>
+                            ${booking.special_requirements ? `
+                            <div style="margin-top: 0.5rem;">
+                                <span style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Requirements:</span>
+                                <p style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px; margin: 0;">${booking.special_requirements}</p>
+                            </div>
+                            ` : ''}
+                            ${booking.message ? `
+                            <div style="margin-top: 0.5rem;">
+                                <span style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Message:</span>
+                                <p style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px; margin: 0;">${booking.message}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <button onclick="this.closest('.modal-overlay').remove()" class="btn-primary" style="width: 100%; padding: 0.75rem;">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // Generate calendar with booked dates
+        function generateCalendar(bookings) {
+            const calendar = document.getElementById('calendarGrid');
+            if (!calendar) {
+                console.error('Calendar element not found');
+                return;
+            }
+            
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthDisplay = document.getElementById('calendarMonth');
+            if (monthDisplay) {
+                monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            } else {
+                // Fallback: update section title if monthDisplay doesn't exist
+                const sectionTitle = document.querySelector('.calendar-container .section-title');
+                if (sectionTitle) {
+                    sectionTitle.innerHTML = `Upcoming Shows - <span>${monthNames[currentMonth]} ${currentYear}</span>`;
+                }
+            }
+            
+            // Get first day of month and total days
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Create booked dates set
+            const bookedDates = new Set(
+                bookings.map(b => new Date(b.event_date).toDateString())
+            );
+            
+            let html = '';
+            
+            // Calendar headers
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                html += `<div class="calendar-header">${day}</div>`;
+            });
+            
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                html += `<div class="calendar-day other-month">${daysInPrevMonth - i}</div>`;
+            }
+            
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const dateString = date.toDateString();
+                const isToday = dateString === today.toDateString();
+                const hasEvent = bookedDates.has(dateString);
+                
+                let classes = 'calendar-day';
+                if (isToday) classes += ' today';
+                if (hasEvent) classes += ' has-event';
+                
+                const dateIso = date.toISOString().split('T')[0];
+                html += `<div class="${classes}" onclick="showBookingDetails('${dateIso}')" style="cursor: ${hasEvent ? 'pointer' : 'default'}" title="${hasEvent ? 'Click to view booking' : ''}">${day}</div>`;
+            }
+            
+            // Next month days
+            const totalCells = firstDay + daysInMonth;
+            const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+            for (let i = 1; i <= remainingCells; i++) {
+                html += `<div class="calendar-day other-month">${i}</div>`;
+            }
+            
+            calendar.innerHTML = html;
+        }
+
+        // Load booking requests
+        async function loadBookingRequests() {
+            try {
+                const response = await ArtNest.apiRequest('/bookings/received', {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    const requests = response.data.filter(r => r.status === 'pending').slice(0, 3);
+                    displayBookingRequests(requests);
+                }
+            } catch (error) {
+                console.error('Error loading booking requests:', error);
+                document.getElementById('bookingRequestsList').innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        No pending requests
+                    </p>
+                `;
+            }
+        }
+
+        // Display booking requests
+        function displayBookingRequests(requests) {
+            const container = document.getElementById('bookingRequestsList');
+            
+            if (requests.length === 0) {
+                container.innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        No pending requests
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = requests.map(request => `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="venue-info">
+                            <h4>${request.sender_name || 'Venue'}</h4>
+                            <p>${request.venue_name || 'Venue Booking'}</p>
+                        </div>
+                        <span class="booking-status pending">Pending</span>
+                    </div>
+                    <div class="booking-details">
+                        <span>📅 ${ArtNest.formatDate(request.event_date)}</span>
+                        <span>💰 $${request.budget?.toLocaleString() || 'N/A'}</span>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn-accept" onclick="handleBookingAction(${request.id}, 'accept')">
+                            Accept
+                        </button>
+                        <button class="btn-reject" onclick="handleBookingAction(${request.id}, 'reject')">
+                            Decline
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle booking action
+        async function handleBookingAction(bookingId, action) {
+            try {
+                const endpoint = action === 'accept' ? 'accept' : 'reject';
+                const response = await ArtNest.apiRequest(`/bookings/${bookingId}/${endpoint}`, {
+                    method: 'PUT'
+                });
+
+                if (response.success) {
+                    ArtNest.showToast(`Booking ${action}ed successfully!`, 'success');
+                    await loadBookingRequests();
+                    
+                    // Update pending count
+                    const currentCount = parseInt(document.getElementById('pendingRequests').textContent);
+                    const newCount = Math.max(0, currentCount - 1);
+                    document.getElementById('pendingRequests').textContent = newCount;
+                    document.getElementById('notificationCount').textContent = newCount;
+                } else {
+                    ArtNest.showToast(response.message || 'Failed to update booking', 'error');
+                }
+            } catch (error) {
+                console.error('Error handling booking action:', error);
+                ArtNest.showToast('Failed to update booking', 'error');
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                const response = await ArtNest.apiRequest('/notifications', {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    const notifications = response.data;
+                    const unreadCount = response.unreadCount;
+                    
+                    // Update badge
+                    const badge = document.getElementById('notificationCount');
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    
+                    // Display notifications
+                    displayNotifications(notifications);
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        // Display notifications
+        function displayNotifications(notifications) {
+            const notificationList = document.getElementById('notificationList');
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <div class="notification-empty-icon">🔔</div>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notificationList.innerHTML = notifications.map(notif => {
+                const icon = getNotificationIcon(notif.type);
+                const iconClass = getNotificationIconClass(notif.type);
+                const timeAgo = formatTimeAgo(notif.created_at);
+                
+                return `
+                    <div class="notification-item ${notif.is_read ? '' : 'unread'}" 
+                         data-id="${notif.id}" 
+                         data-related-id="${notif.related_id}"
+                         onclick="handleNotificationClick(${notif.id}, '${notif.type}', ${notif.related_id})">
+                        <div class="notification-icon ${iconClass}">
+                            ${icon}
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${notif.title}</div>
+                            <div class="notification-message">${notif.message}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get notification icon
+        function getNotificationIcon(type) {
+            const icons = {
+                'booking_accepted': '✅',
+                'booking_rejected': '❌',
+                'booking_request': '📋',
+                'booking_cancelled': '🚫',
+                'message': '💬',
+                'review': '⭐'
+            };
+            return icons[type] || '🔔';
+        }
+
+        // Get notification icon class
+        function getNotificationIconClass(type) {
+            if (type === 'booking_accepted') return 'accepted';
+            if (type === 'booking_rejected') return 'rejected';
+            return 'request';
+        }
+
+        // Format time ago
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Handle notification click
+        async function handleNotificationClick(notificationId, type, relatedId) {
+            try {
+                // Mark as read
+                await ArtNest.apiRequest(`/notifications/${notificationId}/read`, {
+                    method: 'PUT'
+                });
+                
+                // Reload notifications
+                await loadNotifications();
+                
+                // Navigate based on type
+                if (type.includes('booking')) {
+                    const bookingsSection = document.getElementById('recentBookings');
+                    if (bookingsSection) {
+                        bookingsSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling notification click:', error);
+            }
+        }
+
+        // Toggle notification dropdown
+        document.getElementById('notificationBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('notificationDropdown');
+            const btn = document.getElementById('notificationBtn');
+            
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Mark all as read
+        document.getElementById('markAllRead').addEventListener('click', async () => {
+            try {
+                const response = await ArtNest.apiRequest('/notifications/mark-all-read', {
+                    method: 'PUT'
+                });
+                
+                if (response.success) {
+                    await loadNotifications();
+                    ArtNest.showToast('All notifications marked as read', 'success');
+                }
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+            }
+        });
+
+        // Initialize dashboard
+        loadDashboardData();
+        loadNotifications();
+        
+        // Refresh notifications every 30 seconds
+        setInterval(loadNotifications, 30000);
+
+        // Add ripple effect to buttons
+        document.querySelectorAll('button, .quick-action, .nav-link').forEach(element => {
+            element.addEventListener('click', ArtNest.createRipple);
+        });
+    </script>
+</body>
+</html>

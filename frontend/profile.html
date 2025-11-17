@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - ArtNest</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        body {
+            background: var(--dark-bg);
+            padding-top: 80px;
+        }
+
+        /* Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--darker-bg);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Profile Container */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Cover Photo */
+        .cover-photo {
+            position: relative;
+            height: 300px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: -80px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .cover-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cover-photo::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(17, 24, 39, 0.8), transparent);
+        }
+
+        .edit-cover-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-cover-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 100px 2rem 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            animation: fadeInUp 0.6s ease 0.1s backwards;
+        }
+
+        .profile-picture-container {
+            position: absolute;
+            top: -60px;
+            left: 2rem;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--card-bg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .edit-picture-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-picture-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .profile-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .profile-details h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .genre-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-purple);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+        }
+
+        .social-link:hover {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .content-card h3 {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: var(--primary-purple);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .edit-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        /* Portfolio/Gallery Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .portfolio-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .portfolio-item img,
+        .portfolio-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Reviews */
+        .review-card {
+            background: rgba(139, 92, 246, 0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .reviewer-details h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .review-rating {
+            color: var(--accent-yellow);
+        }
+
+        .review-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Edit Mode */
+        .edit-mode {
+            display: none;
+        }
+
+        .edit-mode.active {
+            display: block;
+        }
+
+        .view-mode.hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-info {
+                flex-direction: column;
+            }
+
+            .profile-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .cover-photo {
+                height: 200px;
+                margin-bottom: -60px;
+            }
+
+            .profile-picture {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-header {
+                padding-top: 60px;
+            }
+        }
+
+        /* Booking Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--darker-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-logo">🎤 ArtNest</div>
+        <nav class="header-nav">
+            <a href="#" id="backToDashboard" class="btn btn-secondary">← Back to Dashboard</a>
+            <a href="settings.html" class="btn btn-secondary">⚙️ Settings</a>
+            <a href="#" id="logoutBtn" class="btn btn-primary">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Cover Photo -->
+        <div class="cover-photo">
+            <img id="coverImage" src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=1200&h=300&fit=crop" alt="Cover Photo">
+            <button class="edit-cover-btn" id="editCoverBtn">
+                📷 Change Cover
+            </button>
+            <input type="file" id="coverInput" accept="image/*" style="display: none;">
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-picture-container">
+                <div class="profile-picture">
+                    <img id="profileImage" src="https://ui-avatars.com/api/?name=Artist&size=150&background=8B5CF6&color=fff" alt="Profile Picture">
+                    <div class="edit-picture-btn" id="editPictureBtn">
+                        📷
+                    </div>
+                    <input type="file" id="pictureInput" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-details">
+                    <h1 id="profileName">Artist Name</h1>
+                    <div class="profile-meta">
+                        <span class="genre-badge" id="profileGenre">Pop</span>
+                        <div class="rating">
+                            <span>⭐</span>
+                            <span id="profileRating">4.8</span>
+                            <span style="color: var(--text-secondary);">(24 reviews)</span>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="Instagram">📷</a>
+                        <a href="#" class="social-link" title="YouTube">📹</a>
+                        <a href="#" class="social-link" title="Twitter">🐦</a>
+                        <a href="#" class="social-link" title="Facebook">📘</a>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="statShows">24</div>
+                            <div class="stat-label">Shows</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statFollowers">1.2K</div>
+                            <div class="stat-label">Followers</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statMedia">48</div>
+                            <div class="stat-label">Media</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="bookBtn">📅 Book Now</button>
+                    <button class="btn btn-secondary" id="messageBtn">💬 Message</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- About Section -->
+                <div class="content-card" style="animation-delay: 0.2s;">
+                    <h3>
+                        <span>About</span>
+                        <button class="edit-btn" id="editAboutBtn">Edit</button>
+                    </h3>
+                    <div class="view-mode" id="aboutView">
+                        <p id="aboutText" style="color: var(--text-secondary); line-height: 1.6;">
+                            Loading profile information...
+                        </p>
+                    </div>
+                    <div class="edit-mode" id="aboutEdit">
+                        <div class="form-group">
+                            <textarea id="aboutTextarea" placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="saveAboutBtn">Save</button>
+                            <button class="btn btn-secondary" id="cancelAboutBtn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio/Gallery -->
+                <div class="content-card" style="animation-delay: 0.3s; margin-top: 2rem;">
+                    <h3>
+                        <span id="portfolioTitle">Portfolio</span>
+                        <a href="media.html" class="edit-btn">View All</a>
+                    </h3>
+                    <div class="portfolio-grid" id="portfolioGrid">
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1/-1;">
+                            Loading media...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Details Card -->
+                <div class="content-card" style="animation-delay: 0.4s;">
+                    <h3>
+                        <span>Details</span>
+                        <button class="edit-btn" id="editDetailsBtn">Edit</button>
+                    </h3>
+                    <div class="view-mode" id="detailsView">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">📧 Email</div>
+                                <div id="detailEmail">loading@example.com</div>
+                            </div>
+                            <div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">📱 Phone</div>
+                                <div id="detailPhone">+1234567890</div>
+                            </div>
+                            <div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">📍 Location</div>
+                                <div id="detailLocation">City, Country</div>
+                            </div>
+                            <div id="venueDetailsView" style="display: none;">
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">👥 Capacity</div>
+                                <div id="detailCapacity">500</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="edit-mode" id="detailsEdit">
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="detailPhoneInput" placeholder="+1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="detailLocationInput" placeholder="City, Country">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="saveDetailsBtn">Save</button>
+                            <button class="btn btn-secondary" id="cancelDetailsBtn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="content-card" style="animation-delay: 0.5s; margin-top: 2rem;">
+                    <h3>Reviews</h3>
+                    <div id="reviewsList">
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            Loading reviews...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📅 Request Booking</h2>
+                <button class="close-modal" id="closeBookingModal">✕</button>
+            </div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Event Date *</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Time</label>
+                    <input type="time" id="eventTime">
+                </div>
+                <div class="form-group">
+                    <label>Duration (hours)</label>
+                    <input type="number" id="durationHours" min="1" placeholder="e.g., 4">
+                </div>
+                <div class="form-group">
+                    <label>Budget ($)</label>
+                    <input type="number" id="budget" min="0" placeholder="e.g., 500">
+                </div>
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <input type="text" id="eventType" placeholder="e.g., Wedding, Birthday, Concert">
+                </div>
+                <div class="form-group">
+                    <label>Special Requirements</label>
+                    <textarea id="specialRequirements" placeholder="Any special requirements or equipment needed..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="message" placeholder="Tell them about your event..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Send Request</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBooking">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/bookings.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Require authentication
+        ArtNest.requireAuth();
+
+        const user = JSON.parse(localStorage.getItem('artnet_user'));
+        const userId = user?.id || user?.userId;
+        const userType = user?.userType;
+        const viewingUserId = userId;
+        const isOwnProfile = true; // Always viewing own profile for now
+
+        // Update back to dashboard link
+        document.getElementById('backToDashboard').href = userType === 'artist' ? 'artist-dashboard.html' : 'venue-dashboard.html';
+
+        // Show/hide action buttons based on ownership
+        const bookBtn = document.getElementById('bookBtn');
+        const messageBtn = document.getElementById('messageBtn');
+        
+        if (isOwnProfile) {
+            // Hide booking/message buttons on own profile
+            if (bookBtn) bookBtn.style.display = 'none';
+            if (messageBtn) messageBtn.style.display = 'none';
+        } else {
+            // Show booking button for other users
+            if (bookBtn) bookBtn.style.display = 'inline-block';
+            if (messageBtn) messageBtn.style.display = 'inline-block';
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            ArtNest.logout();
+        });
+
+        // Load profile data
+        async function loadProfile() {
+            try {
+                const endpoint = userType === 'artist' ? `/artists/${userId}` : `/venues/${userId}`;
+                const response = await ArtNest.apiRequest(endpoint, { method: 'GET' });
+
+                if (response.success) {
+                    displayProfile(response.data);
+                    await loadMedia();
+                    await loadReviews();
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                ArtNest.showToast('Failed to load profile', 'error');
+            }
+        }
+
+        // Display profile
+        function displayProfile(data) {
+            // For venues, show venue_name; for artists, show stage_name or full_name
+            if (userType === 'venue') {
+                document.getElementById('profileName').textContent = data.venue_name || data.full_name || 'Venue Name';
+            } else {
+                document.getElementById('profileName').textContent = data.stage_name || data.full_name || 'Artist Name';
+            }
+            
+            document.getElementById('profileGenre').textContent = data.genre || data.venue_type || 'N/A';
+            document.getElementById('profileRating').textContent = data.avg_rating?.toFixed(1) || '0.0';
+            document.getElementById('aboutText').textContent = data.bio || 'No bio available.';
+            document.getElementById('aboutTextarea').value = data.bio || '';
+            document.getElementById('detailEmail').textContent = data.email;
+            document.getElementById('detailPhone').textContent = data.phone || 'Not provided';
+            document.getElementById('detailPhoneInput').value = data.phone || '';
+            document.getElementById('detailLocation').textContent = data.city || 'Not provided';
+            document.getElementById('detailLocationInput').value = data.city || '';
+
+            if (userType === 'venue') {
+                document.getElementById('venueDetailsView').style.display = 'block';
+                document.getElementById('detailCapacity').textContent = data.capacity || 'Not specified';
+                document.getElementById('portfolioTitle').textContent = 'Media';
+            }
+
+            // Update images if available
+            if (data.profile_picture) {
+                document.getElementById('profileImage').src = `http://localhost:3000${data.profile_picture}`;
+            }
+            if (data.cover_photo) {
+                document.getElementById('coverImage').src = `http://localhost:3000${data.cover_photo}`;
+            }
+        }
+
+        // Load media
+        async function loadMedia() {
+            try {
+                const response = await ArtNest.apiRequest(`/media/user/${userId}`, { method: 'GET' });
+                
+                if (response.success && response.data.length > 0) {
+                    const grid = document.getElementById('portfolioGrid');
+                    grid.innerHTML = response.data.slice(0, 6).map(item => `
+                        <div class="portfolio-item">
+                            ${item.media_type === 'video' ? `
+                                <video src="http://localhost:3000${item.file_url}"></video>
+                                <div class="play-overlay">▶️</div>
+                            ` : `
+                                <img src="http://localhost:3000${item.file_url}" alt="Media">
+                            `}
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('statMedia').textContent = response.data.length;
+                } else {
+                    document.getElementById('portfolioGrid').innerHTML = `
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1/-1;">
+                            No media uploaded yet
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading media:', error);
+            }
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const endpoint = userType === 'artist' ? `/artists/${userId}/reviews` : `/venues/${userId}/reviews`;
+                const response = await ArtNest.apiRequest(endpoint, { method: 'GET' });
+                
+                if (response.success && response.data.length > 0) {
+                    displayReviews(response.data);
+                } else {
+                    document.getElementById('reviewsList').innerHTML = `
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            No reviews yet
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        // Display reviews
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviewsList');
+            container.innerHTML = reviews.slice(0, 5).map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">${review.reviewer_name?.charAt(0) || 'U'}</div>
+                            <div class="reviewer-details">
+                                <h4>${review.reviewer_name || 'Anonymous'}</h4>
+                                <div class="review-date">${ArtNest.formatDate(review.created_at)}</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                    </div>
+                    <div class="review-text">${review.comment || 'No comment provided.'}</div>
+                </div>
+            `).join('');
+        }
+
+        // Edit About
+        document.getElementById('editAboutBtn').addEventListener('click', () => {
+            document.getElementById('aboutView').classList.add('hidden');
+            document.getElementById('aboutEdit').classList.add('active');
+        });
+
+        document.getElementById('cancelAboutBtn').addEventListener('click', () => {
+            document.getElementById('aboutView').classList.remove('hidden');
+            document.getElementById('aboutEdit').classList.remove('active');
+        });
+
+        document.getElementById('saveAboutBtn').addEventListener('click', async () => {
+            const bio = document.getElementById('aboutTextarea').value;
+            try {
+                const endpoint = userType === 'artist' ? '/artists/profile' : '/venues/profile';
+                const response = await ArtNest.apiRequest(endpoint, {
+                    method: 'PUT',
+                    body: JSON.stringify({ bio })
+                });
+
+                if (response.success) {
+                    document.getElementById('aboutText').textContent = bio;
+                    document.getElementById('aboutView').classList.remove('hidden');
+                    document.getElementById('aboutEdit').classList.remove('active');
+                    ArtNest.showToast('Bio updated successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('Error updating bio:', error);
+                ArtNest.showToast('Failed to update bio', 'error');
+            }
+        });
+
+        // Edit Details
+        document.getElementById('editDetailsBtn').addEventListener('click', () => {
+            document.getElementById('detailsView').classList.add('hidden');
+            document.getElementById('detailsEdit').classList.add('active');
+        });
+
+        document.getElementById('cancelDetailsBtn').addEventListener('click', () => {
+            document.getElementById('detailsView').classList.remove('hidden');
+            document.getElementById('detailsEdit').classList.remove('active');
+        });
+
+        document.getElementById('saveDetailsBtn').addEventListener('click', async () => {
+            const phone = document.getElementById('detailPhoneInput').value;
+            const city = document.getElementById('detailLocationInput').value;
+            
+            try {
+                const endpoint = userType === 'artist' ? '/artists/profile' : '/venues/profile';
+                const response = await ArtNest.apiRequest(endpoint, {
+                    method: 'PUT',
+                    body: JSON.stringify({ phone, city })
+                });
+
+                if (response.success) {
+                    document.getElementById('detailPhone').textContent = phone;
+                    document.getElementById('detailLocation').textContent = city;
+                    document.getElementById('detailsView').classList.remove('hidden');
+                    document.getElementById('detailsEdit').classList.remove('active');
+                    ArtNest.showToast('Details updated successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('Error updating details:', error);
+                ArtNest.showToast('Failed to update details', 'error');
+            }
+        });
+
+        // Picture upload handlers
+        document.getElementById('editPictureBtn').addEventListener('click', () => {
+            document.getElementById('pictureInput').click();
+        });
+
+        document.getElementById('editCoverBtn').addEventListener('click', () => {
+            document.getElementById('coverInput').click();
+        });
+
+        document.getElementById('pictureInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                await uploadImage(file, 'profile');
+            }
+        });
+
+        document.getElementById('coverInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                await uploadImage(file, 'cover');
+            }
+        });
+
+        async function uploadImage(file, type) {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('type', type);
+
+            try {
+                // Upload image to server
+                const uploadResponse = await ArtNest.apiRequest('/media/upload', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {} // Let browser set Content-Type with boundary
+                });
+
+                if (!uploadResponse.success) {
+                    throw new Error(uploadResponse.message || 'Upload failed');
+                }
+
+                const imageUrl = uploadResponse.data.url;
+
+                // Update user profile with new image URL
+                if (type === 'profile') {
+                    const updateResponse = await ArtNest.apiRequest('/auth/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ profilePic: imageUrl })
+                    });
+
+                    if (updateResponse.success) {
+                        // Update localStorage
+                        const user = JSON.parse(localStorage.getItem('artnet_user'));
+                        user.profilePic = imageUrl;
+                        localStorage.setItem('artnet_user', JSON.stringify(user));
+
+                        // Update image preview
+                        document.getElementById('profileImage').src = imageUrl;
+                        
+                        ArtNest.showToast('Profile photo uploaded successfully!', 'success');
+                    } else {
+                        throw new Error(updateResponse.message || 'Failed to update profile');
+                    }
+                } else {
+                    // Cover photo update (needs similar implementation)
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('coverImage').src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    ArtNest.showToast('Cover photo preview updated!', 'success');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                ArtNest.showToast('Failed to upload image: ' + error.message, 'error');
+            }
+        }
+
+        // Booking Modal Handlers
+        const bookingModal = document.getElementById('bookingModal');
+        const bookingForm = document.getElementById('bookingForm');
+        
+        if (bookBtn) {
+            bookBtn.addEventListener('click', () => {
+                // Set minimum date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('eventDate').min = today;
+                bookingModal.classList.add('active');
+            });
+        }
+
+        document.getElementById('closeBookingModal').addEventListener('click', () => {
+            bookingModal.classList.remove('active');
+            bookingForm.reset();
+        });
+
+        document.getElementById('cancelBooking').addEventListener('click', () => {
+            bookingModal.classList.remove('active');
+            bookingForm.reset();
+        });
+
+        // Close modal on background click
+        bookingModal.addEventListener('click', (e) => {
+            if (e.target === bookingModal) {
+                bookingModal.classList.remove('active');
+                bookingForm.reset();
+            }
+        });
+
+        // Handle booking form submission
+        bookingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bookingData = {
+                receiverId: viewingUserId,
+                requestType: userType === 'artist' ? 'venue_to_artist' : 'artist_to_venue',
+                eventDate: document.getElementById('eventDate').value,
+                eventTime: document.getElementById('eventTime').value || null,
+                durationHours: document.getElementById('durationHours').value || null,
+                budget: document.getElementById('budget').value || null,
+                eventType: document.getElementById('eventType').value || null,
+                specialRequirements: document.getElementById('specialRequirements').value || null,
+                message: document.getElementById('message').value || null
+            };
+
+            try {
+                const response = await BookingManager.create(bookingData);
+                if (response.success) {
+                    bookingModal.classList.remove('active');
+                    bookingForm.reset();
+                }
+            } catch (error) {
+                console.error('Error creating booking:', error);
+            }
+        });
+
+        // Initialize
+        loadProfile();
+    </script>
+</body>
+</html>

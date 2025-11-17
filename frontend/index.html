@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtNest - Connect Artists with Venues</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8B5CF6, #3B82F6, #EC4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: var(--darker-bg);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+            border-color: var(--primary-purple);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Stats Section */
+        .stats {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-card {
+            padding: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .music-notes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Musical Notes -->
+    <div class="music-notes">
+        <div class="music-note">🎵</div>
+        <div class="music-note">🎶</div>
+        <div class="music-note">🎵</div>
+        <div class="music-note">🎶</div>
+        <div class="music-note">🎵</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="logo">🎵 ArtNest</h1>
+            <p class="tagline fade-in-up stagger-1">
+                Connect talented artists with perfect venues
+            </p>
+            <p class="fade-in-up stagger-2" style="color: var(--text-secondary); margin-bottom: 2rem;">
+                The ultimate platform for booking live performances, managing events, and building your music career
+            </p>
+            <div class="cta-buttons fade-in-up stagger-3">
+                <a href="signup.html" class="btn btn-primary btn-lg">
+                    Get Started
+                </a>
+                <a href="login.html" class="btn btn-secondary btn-lg">
+                    Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="text-center">Why Choose ArtNest?</h2>
+            <p class="text-center" style="color: var(--text-secondary);">
+                Everything you need to manage your performances and bookings
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">🎤</div>
+                    <h3>For Artists</h3>
+                    <p>Showcase your talent, build your portfolio, and get booked by top venues</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">🏛️</div>
+                    <h3>For Venues</h3>
+                    <p>Discover talented artists, manage bookings, and fill your calendar</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">💬</div>
+                    <h3>Real-time Chat</h3>
+                    <p>Communicate instantly with artists and venues through our messaging system</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">📅</div>
+                    <h3>Smart Booking</h3>
+                    <p>Manage requests, track bookings, and never miss an opportunity</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Reviews & Ratings</h3>
+                    <p>Build your reputation with verified reviews from real performances</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access your account and manage bookings from any device</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <h2>Join Our Growing Community</h2>
+            <div class="stats-grid">
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-number count-up">1000+</div>
+                    <div class="stat-label">Active Artists</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-number count-up">500+</div>
+                    <div class="stat-label">Venues</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-number count-up">5000+</div>
+                    <div class="stat-label">Bookings</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-number count-up">4.8⭐</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="hero" style="min-height: 50vh;">
+        <div class="hero-content">
+            <h2 class="fade-in-up">Ready to Get Started?</h2>
+            <p class="fade-in-up stagger-1" style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Join ArtNest today and take your music career to the next level
+            </p>
+            <div class="cta-buttons fade-in-up stagger-2">
+                <a href="signup.html?type=artist" class="btn btn-primary btn-lg">
+                    Sign Up as Artist
+                </a>
+                <a href="signup.html?type=venue" class="btn btn-secondary btn-lg">
+                    Sign Up as Venue
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <h3>🎵 ArtNest</h3>
+            <p style="color: var(--text-secondary); margin: 1rem 0;">
+                Connecting artists with venues since 2024
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                © 2024 ArtNest. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
