@@ -5,7 +5,7 @@ const API_CONFIG = {
     LOCAL_URL: 'http://localhost:3000',
     
     // For cloud deployment (accessible from anywhere)
-    NETWORK_URL: 'https://artnest-backend-fdk6.onrender.com',
+    NETWORK_URL: 'https://artnet-production.up.railway.app',
     
     // Current mode - set to 'NETWORK_URL' for cloud access
     CURRENT_MODE: 'NETWORK_URL'
