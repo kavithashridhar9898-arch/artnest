@@ -5,12 +5,12 @@ const getSettings = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [settings] = await db.query(
-            'SELECT * FROM user_settings WHERE user_id = ?',
+        const settings = await db.query(
+            'SELECT * FROM user_settings WHERE user_id = $1',
             [userId]
         );
 
-        if (settings.length === 0) {
+        if (settings.rows.length === 0) {
             // Return default settings if none exist
             return res.json({
                 success: true,
@@ -35,7 +35,7 @@ const getSettings = async (req, res) => {
 
         res.json({
             success: true,
-            data: settings[0]
+            data: settings.rows[0]
         });
     } catch (error) {
         console.error('Get settings error:', error);
@@ -68,8 +68,8 @@ const updateSettings = async (req, res) => {
         } = req.body;
 
         // Check if settings exist
-        const [existing] = await db.query(
-            'SELECT * FROM user_settings WHERE user_id = ?',
+        const existing = await db.query(
+            'SELECT * FROM user_settings WHERE user_id = $1',
             [userId]
         );
 
@@ -136,7 +136,7 @@ const updateSettings = async (req, res) => {
 
         updates.push('updated_at = NOW()');
 
-        if (existing.length === 0) {
+        if (existing.rows.length === 0) {
             // Insert new settings
             await db.query(
                 `INSERT INTO user_settings (
@@ -155,7 +155,7 @@ const updateSettings = async (req, res) => {
                     dark_mode,
                     enable_animations,
                     two_factor_enabled
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
                 [
                     userId,
                     notify_booking_requests ?? true,
@@ -178,23 +178,21 @@ const updateSettings = async (req, res) => {
             // Update existing settings
             if (updates.length > 1) { // More than just updated_at
                 values.push(userId);
-                await db.query(
-                    `UPDATE user_settings SET ${updates.join(', ')} WHERE user_id = ?`,
-                    values
-                );
+                const updateQuery = `UPDATE user_settings SET ${updates.map((u, i) => u.replace('?', `$${i + 1}`)).join(', ')} WHERE user_id = $${values.length}`;
+                await db.query(updateQuery, values);
             }
         }
 
         // Get updated settings
-        const [updatedSettings] = await db.query(
-            'SELECT * FROM user_settings WHERE user_id = ?',
+        const updatedSettings = await db.query(
+            'SELECT * FROM user_settings WHERE user_id = $1',
             [userId]
         );
 
         res.json({
             success: true,
             message: 'Settings updated successfully',
-            data: updatedSettings[0]
+            data: updatedSettings.rows[0]
         });
     } catch (error) {
         console.error('Update settings error:', error);
@@ -220,19 +218,19 @@ const deleteAccount = async (req, res) => {
 
         // Verify password
         const bcrypt = require('bcrypt');
-        const [users] = await db.query(
-            'SELECT password FROM users WHERE id = ?',
+        const users = await db.query(
+            'SELECT password FROM users WHERE id = $1',
             [userId]
         );
 
-        if (users.length === 0) {
+        if (users.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'User not found'
             });
         }
 
-        const isValidPassword = await bcrypt.compare(password, users[0].password);
+        const isValidPassword = await bcrypt.compare(password, users.rows[0].password);
         
         if (!isValidPassword) {
             return res.status(401).json({
@@ -242,13 +240,13 @@ const deleteAccount = async (req, res) => {
         }
 
         // Delete user data in order (respecting foreign keys)
-        await db.query('DELETE FROM chat_messages WHERE sender_id = ? OR receiver_id = ?', [userId, userId]);
-        await db.query('DELETE FROM chat_conversations WHERE user1_id = ? OR user2_id = ?', [userId, userId]);
-        await db.query('DELETE FROM booking_requests WHERE venue_id = ? OR artist_id = ?', [userId, userId]);
-        await db.query('DELETE FROM user_settings WHERE user_id = ?', [userId]);
-        await db.query('DELETE FROM artist_profiles WHERE user_id = ?', [userId]);
-        await db.query('DELETE FROM venue_profiles WHERE user_id = ?', [userId]);
-        await db.query('DELETE FROM users WHERE id = ?', [userId]);
+        await db.query('DELETE FROM chat_messages WHERE sender_id = $1 OR receiver_id = $2', [userId, userId]);
+        await db.query('DELETE FROM chat_conversations WHERE user1_id = $1 OR user2_id = $2', [userId, userId]);
+        await db.query('DELETE FROM booking_requests WHERE venue_id = $1 OR artist_id = $2', [userId, userId]);
+        await db.query('DELETE FROM user_settings WHERE user_id = $1', [userId]);
+        await db.query('DELETE FROM artist_profiles WHERE user_id = $1', [userId]);
+        await db.query('DELETE FROM venue_profiles WHERE user_id = $1', [userId]);
+        await db.query('DELETE FROM users WHERE id = $1', [userId]);
 
         res.json({
             success: true,

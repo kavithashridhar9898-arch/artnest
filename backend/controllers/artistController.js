@@ -24,29 +24,31 @@ const getAllArtists = async (req, res) => {
         
         const params = [];
         
+        let paramIndex = 1;
+        
         if (genre) {
-            query += ` AND ap.genre LIKE ?`;
+            query += ` AND ap.genre LIKE $${paramIndex++}`;
             params.push(`%${genre}%`);
         }
         
         if (search) {
-            query += ` AND (u.full_name LIKE ? OR ap.stage_name LIKE ? OR ap.genre LIKE ?)`;
+            query += ` AND (u.full_name LIKE $${paramIndex++} OR ap.stage_name LIKE $${paramIndex++} OR ap.genre LIKE $${paramIndex++})`;
             params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
         
         if (minRating) {
-            query += ` AND ap.rating >= ?`;
+            query += ` AND ap.rating >= $${paramIndex++}`;
             params.push(minRating);
         }
         
         query += ` ORDER BY ap.rating DESC, ap.total_shows DESC`;
         
-        const [artists] = await db.query(query, params);
+        const artists = await db.query(query, params);
         
         res.json({
             success: true,
-            count: artists.length,
-            data: artists
+            count: artists.rows.length,
+            data: artists.rows
         });
     } catch (error) {
         console.error('Get artists error:', error);
@@ -65,17 +67,17 @@ const getArtistById = async (req, res) => {
     try {
         const { id } = req.params;
         
-        const [artists] = await db.query(`
+        const artists = await db.query(`
             SELECT u.id, u.email, u.full_name, u.phone, u.profile_pic, u.cover_photo, u.is_verified, u.created_at,
                    ap.stage_name, ap.genre, ap.bio, ap.experience_years, ap.price_range, 
                    ap.performance_duration, ap.equipment_provided, ap.spotify_link, 
                    ap.youtube_link, ap.instagram_link, ap.rating, ap.total_shows
             FROM users u
             INNER JOIN artist_profiles ap ON u.id = ap.user_id
-            WHERE u.id = ? AND u.user_type = 'artist'
+            WHERE u.id = $1 AND u.user_type = 'artist'
         `, [id]);
         
-        if (artists.length === 0) {
+        if (artists.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Artist not found'
@@ -84,7 +86,7 @@ const getArtistById = async (req, res) => {
         
         res.json({
             success: true,
-            data: artists[0]
+            data: artists.rows[0]
         });
     } catch (error) {
         console.error('Get artist by ID error:', error);
@@ -123,10 +125,8 @@ const updateProfile = async (req, res) => {
         
         if (userUpdates.length > 0) {
             userValues.push(userId);
-            await db.query(
-                `UPDATE users SET ${userUpdates.join(', ')} WHERE id = ?`,
-                userValues
-            );
+            const userQuery = `UPDATE users SET ${userUpdates.map((u, i) => u.replace('?', `$${i + 1}`)).join(', ')} WHERE id = $${userValues.length}`;
+            await db.query(userQuery, userValues);
         }
         
         // Update artist_profiles table (only if values provided)
@@ -180,10 +180,8 @@ const updateProfile = async (req, res) => {
         
         if (profileUpdates.length > 0) {
             profileValues.push(userId);
-            await db.query(
-                `UPDATE artist_profiles SET ${profileUpdates.join(', ')} WHERE user_id = ?`,
-                profileValues
-            );
+            const profileQuery = `UPDATE artist_profiles SET ${profileUpdates.map((u, i) => u.replace('?', `$${i + 1}`)).join(', ')} WHERE user_id = $${profileValues.length}`;
+            await db.query(profileQuery, profileValues);
         }
         
         console.log('✅ Artist profile updated:', userId);
@@ -209,18 +207,18 @@ const getPortfolio = async (req, res) => {
     try {
         const { id } = req.params;
         
-        const [media] = await db.query(`
+        const media = await db.query(`
             SELECT id, media_type, file_url, thumbnail_url, title, description, 
                    likes_count, views_count, created_at
             FROM media_posts
-            WHERE user_id = ?
+            WHERE user_id = $1
             ORDER BY created_at DESC
         `, [id]);
         
         res.json({
             success: true,
-            count: media.length,
-            data: media
+            count: media.rows.length,
+            data: media.rows
         });
     } catch (error) {
         console.error('Get portfolio error:', error);
@@ -239,19 +237,19 @@ const getReviews = async (req, res) => {
     try {
         const { id } = req.params;
         
-        const [reviews] = await db.query(`
+        const reviews = await db.query(`
             SELECT r.id, r.rating, r.review_text, r.created_at,
                    u.full_name as reviewer_name, u.profile_pic as reviewer_pic
             FROM reviews r
             INNER JOIN users u ON r.reviewer_id = u.id
-            WHERE r.reviewed_id = ?
+            WHERE r.reviewed_id = $1
             ORDER BY r.created_at DESC
         `, [id]);
         
         res.json({
             success: true,
-            count: reviews.length,
-            data: reviews
+            count: reviews.rows.length,
+            data: reviews.rows
         });
     } catch (error) {
         console.error('Get reviews error:', error);
