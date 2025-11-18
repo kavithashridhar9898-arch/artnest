@@ -115,18 +115,20 @@ const updateProfile = async (req, res) => {
         const userValues = [];
         
         if (fullName !== undefined) {
-            userUpdates.push('full_name = ?');
+            userUpdates.push(`full_name = $${userValues.length + 1}`);
             userValues.push(fullName);
         }
         if (phone !== undefined) {
-            userUpdates.push('phone = ?');
+            userUpdates.push(`phone = $${userValues.length + 1}`);
             userValues.push(phone);
         }
         
         if (userUpdates.length > 0) {
             userValues.push(userId);
-            const userQuery = `UPDATE users SET ${userUpdates.map((u, i) => u.replace('?', `$${i + 1}`)).join(', ')} WHERE id = $${userValues.length}`;
-            await db.query(userQuery, userValues);
+            await db.query(
+                `UPDATE users SET ${userUpdates.join(', ')} WHERE id = $${userValues.length}`,
+                userValues
+            );
         }
         
         // Update artist_profiles table (only if values provided)
@@ -134,54 +136,56 @@ const updateProfile = async (req, res) => {
         const profileValues = [];
         
         if (stageName !== undefined) {
-            profileUpdates.push('stage_name = ?');
+            profileUpdates.push(`stage_name = $${profileValues.length + 1}`);
             profileValues.push(stageName);
         }
         if (genre !== undefined) {
-            profileUpdates.push('genre = ?');
+            profileUpdates.push(`genre = $${profileValues.length + 1}`);
             profileValues.push(genre);
         }
         if (bio !== undefined) {
-            profileUpdates.push('bio = ?');
+            profileUpdates.push(`bio = $${profileValues.length + 1}`);
             profileValues.push(bio);
         }
         if (experienceYears !== undefined) {
-            profileUpdates.push('experience_years = ?');
+            profileUpdates.push(`experience_years = $${profileValues.length + 1}`);
             profileValues.push(experienceYears);
         }
         if (priceRange !== undefined) {
-            profileUpdates.push('price_range = ?');
+            profileUpdates.push(`price_range = $${profileValues.length + 1}`);
             profileValues.push(priceRange);
         }
         if (performanceDuration !== undefined) {
-            profileUpdates.push('performance_duration = ?');
+            profileUpdates.push(`performance_duration = $${profileValues.length + 1}`);
             profileValues.push(performanceDuration);
         }
         if (equipmentProvided !== undefined) {
-            profileUpdates.push('equipment_provided = ?');
+            profileUpdates.push(`equipment_provided = $${profileValues.length + 1}`);
             profileValues.push(equipmentProvided);
         }
         if (spotifyLink !== undefined) {
-            profileUpdates.push('spotify_link = ?');
+            profileUpdates.push(`spotify_link = $${profileValues.length + 1}`);
             profileValues.push(spotifyLink);
         }
         if (youtubeLink !== undefined) {
-            profileUpdates.push('youtube_link = ?');
+            profileUpdates.push(`youtube_link = $${profileValues.length + 1}`);
             profileValues.push(youtubeLink);
         }
         if (instagramLink !== undefined) {
-            profileUpdates.push('instagram_link = ?');
+            profileUpdates.push(`instagram_link = $${profileValues.length + 1}`);
             profileValues.push(instagramLink);
         }
         if (city !== undefined) {
-            profileUpdates.push('city = ?');
+            profileUpdates.push(`city = $${profileValues.length + 1}`);
             profileValues.push(city);
         }
         
         if (profileUpdates.length > 0) {
             profileValues.push(userId);
-            const profileQuery = `UPDATE artist_profiles SET ${profileUpdates.map((u, i) => u.replace('?', `$${i + 1}`)).join(', ')} WHERE user_id = $${profileValues.length}`;
-            await db.query(profileQuery, profileValues);
+            await db.query(
+                `UPDATE artist_profiles SET ${profileUpdates.join(', ')} WHERE user_id = $${profileValues.length}`,
+                profileValues
+            );
         }
         
         console.log('✅ Artist profile updated:', userId);
