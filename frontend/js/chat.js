@@ -41,7 +41,7 @@ const ChatManager = (function() {
     function initializeSocket(token) {
         console.log('Connecting to Socket.IO server...');
 
-        socket = io('http://localhost:3000', {
+        socket = io(window.API_BASE_URL, {
             auth: {
                 token: token
             }
