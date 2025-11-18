@@ -83,9 +83,10 @@ const register = async (req, res) => {
                 [userId]
             );
         } else {
+            // For venue, set default values for required fields
             await db.query(
-                'INSERT INTO venue_profiles (user_id) VALUES ($1)',
-                [userId]
+                'INSERT INTO venue_profiles (user_id, venue_name, address) VALUES ($1, $2, $3)',
+                [userId, fullName, 'Address not set']
             );
         }
 
