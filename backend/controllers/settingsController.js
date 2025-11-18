@@ -76,65 +76,65 @@ const updateSettings = async (req, res) => {
         const updates = [];
         const values = [];
 
-        // Build dynamic update query
+        // Build dynamic update query with proper PostgreSQL parameter syntax
         if (notify_booking_requests !== undefined) {
-            updates.push('notify_booking_requests = ?');
+            updates.push(`notify_booking_requests = $${values.length + 1}`);
             values.push(notify_booking_requests);
         }
         if (notify_booking_confirmations !== undefined) {
-            updates.push('notify_booking_confirmations = ?');
+            updates.push(`notify_booking_confirmations = $${values.length + 1}`);
             values.push(notify_booking_confirmations);
         }
         if (notify_messages !== undefined) {
-            updates.push('notify_messages = ?');
+            updates.push(`notify_messages = $${values.length + 1}`);
             values.push(notify_messages);
         }
         if (notify_reviews !== undefined) {
-            updates.push('notify_reviews = ?');
+            updates.push(`notify_reviews = $${values.length + 1}`);
             values.push(notify_reviews);
         }
         if (notify_marketing !== undefined) {
-            updates.push('notify_marketing = ?');
+            updates.push(`notify_marketing = $${values.length + 1}`);
             values.push(notify_marketing);
         }
         if (public_profile !== undefined) {
-            updates.push('public_profile = ?');
+            updates.push(`public_profile = $${values.length + 1}`);
             values.push(public_profile);
         }
         if (show_email !== undefined) {
-            updates.push('show_email = ?');
+            updates.push(`show_email = $${values.length + 1}`);
             values.push(show_email);
         }
         if (show_phone !== undefined) {
-            updates.push('show_phone = ?');
+            updates.push(`show_phone = $${values.length + 1}`);
             values.push(show_phone);
         }
         if (show_online_status !== undefined) {
-            updates.push('show_online_status = ?');
+            updates.push(`show_online_status = $${values.length + 1}`);
             values.push(show_online_status);
         }
         if (language !== undefined) {
-            updates.push('language = ?');
+            updates.push(`language = $${values.length + 1}`);
             values.push(language);
         }
         if (timezone !== undefined) {
-            updates.push('timezone = ?');
+            updates.push(`timezone = $${values.length + 1}`);
             values.push(timezone);
         }
         if (dark_mode !== undefined) {
-            updates.push('dark_mode = ?');
+            updates.push(`dark_mode = $${values.length + 1}`);
             values.push(dark_mode);
         }
         if (enable_animations !== undefined) {
-            updates.push('enable_animations = ?');
+            updates.push(`enable_animations = $${values.length + 1}`);
             values.push(enable_animations);
         }
         if (two_factor_enabled !== undefined) {
-            updates.push('two_factor_enabled = ?');
+            updates.push(`two_factor_enabled = $${values.length + 1}`);
             values.push(two_factor_enabled);
         }
 
-        updates.push('updated_at = NOW()');
+        updates.push('updated_at = CURRENT_TIMESTAMP');
 
         if (existing.rows.length === 0) {
             // Insert new settings
@@ -178,7 +178,7 @@ const updateSettings = async (req, res) => {
             // Update existing settings
             if (updates.length > 1) { // More than just updated_at
                 values.push(userId);
-                const updateQuery = `UPDATE user_settings SET ${updates.map((u, i) => u.replace('?', `$${i + 1}`)).join(', ')} WHERE user_id = $${values.length}`;
+                const updateQuery = `UPDATE user_settings SET ${updates.join(', ')} WHERE user_id = $${values.length}`;
                 await db.query(updateQuery, values);
             }
         }

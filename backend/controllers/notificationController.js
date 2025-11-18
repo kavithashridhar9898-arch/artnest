@@ -5,22 +5,22 @@ const getNotifications = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [notifications] = await db.query(`
+        const notifications = await db.query(`
             SELECT * FROM notifications
-            WHERE user_id = ?
+            WHERE user_id = $1
             ORDER BY created_at DESC
             LIMIT 50
         `, [userId]);
 
-        const [unreadCount] = await db.query(`
+        const unreadCount = await db.query(`
             SELECT COUNT(*) as count FROM notifications
-            WHERE user_id = ? AND is_read = 0
+            WHERE user_id = $1 AND is_read = false
         `, [userId]);
 
         res.json({
             success: true,
-            data: notifications,
-            unreadCount: unreadCount[0].count
+            data: notifications.rows,
+            unreadCount: unreadCount.rows[0].count
         });
     } catch (error) {
         console.error('Get notifications error:', error);
@@ -39,8 +39,8 @@ const markAsRead = async (req, res) => {
 
         await db.query(`
             UPDATE notifications 
-            SET is_read = 1 
-            WHERE id = ? AND user_id = ?
+            SET is_read = true 
+            WHERE id = $1 AND user_id = $2
         `, [id, userId]);
 
         res.json({
@@ -63,8 +63,8 @@ const markAllAsRead = async (req, res) => {
 
         await db.query(`
             UPDATE notifications 
-            SET is_read = 1 
-            WHERE user_id = ? AND is_read = 0
+            SET is_read = true 
+            WHERE user_id = $1 AND is_read = false
         `, [userId]);
 
         res.json({
@@ -88,7 +88,7 @@ const deleteNotification = async (req, res) => {
 
         await db.query(`
             DELETE FROM notifications 
-            WHERE id = ? AND user_id = ?
+            WHERE id = $1 AND user_id = $2
         `, [id, userId]);
 
         res.json({
@@ -109,14 +109,14 @@ const getUnreadCount = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [result] = await db.query(`
+        const result = await db.query(`
             SELECT COUNT(*) as count FROM notifications
-            WHERE user_id = ? AND is_read = 0
+            WHERE user_id = $1 AND is_read = false
         `, [userId]);
 
         res.json({
             success: true,
-            count: result[0].count
+            count: result.rows[0].count
         });
     } catch (error) {
         console.error('Get unread count error:', error);

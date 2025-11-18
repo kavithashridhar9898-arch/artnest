@@ -23,18 +23,19 @@ const uploadMedia = async (req, res) => {
         const fileUrl = `/uploads/${relativePath}`;
         const mediaType = req.file.mimetype.startsWith('image/') ? 'image' : 'video';
 
-        const [result] = await db.query(`
+        const result = await db.query(`
             INSERT INTO media_posts (user_id, media_type, file_url, title, description, tags)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id
         `, [userId, mediaType, fileUrl, title, description, tags]);
 
-        console.log('✅ Media uploaded:', result.insertId);
+        console.log('✅ Media uploaded:', result.rows[0].id);
 
         res.status(201).json({
             success: true,
             message: 'Media uploaded successfully',
             data: {
-                id: result.insertId,
+                id: result.rows[0].id,
                 fileUrl: fileUrl,
                 mediaType: mediaType
             }
@@ -52,18 +53,18 @@ const getFeed = async (req, res) => {
     try {
         const { limit = 20, offset = 0 } = req.query;
 
-        const [media] = await db.query(`
+        const media = await db.query(`
             SELECT mp.*, u.full_name, u.profile_pic, u.user_type
             FROM media_posts mp
             INNER JOIN users u ON mp.user_id = u.id
             ORDER BY mp.created_at DESC
-            LIMIT ? OFFSET ?
+            LIMIT $1 OFFSET $2
         `, [parseInt(limit), parseInt(offset)]);
 
         res.json({
             success: true,
-            count: media.length,
-            data: media
+            count: media.rows.length,
+            data: media.rows
         });
     } catch (error) {
         console.error('Get feed error:', error);
@@ -78,16 +79,16 @@ const getUserMedia = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const [media] = await db.query(`
+        const media = await db.query(`
             SELECT * FROM media_posts
-            WHERE user_id = ?
+            WHERE user_id = $1
             ORDER BY created_at DESC
         `, [userId]);
 
         res.json({
             success: true,
-            count: media.length,
-            data: media
+            count: media.rows.length,
+            data: media.rows
         });
     } catch (error) {
         console.error('Get user media error:', error);
@@ -102,14 +103,14 @@ const getMediaById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [media] = await db.query(`
+        const media = await db.query(`
             SELECT mp.*, u.full_name, u.profile_pic, u.user_type
             FROM media_posts mp
             INNER JOIN users u ON mp.user_id = u.id
-            WHERE mp.id = ?
+            WHERE mp.id = $1
         `, [id]);
 
-        if (media.length === 0) {
+        if (media.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Media not found'
@@ -117,11 +118,11 @@ const getMediaById = async (req, res) => {
         }
 
         // Increment views
-        await db.query('UPDATE media_posts SET views_count = views_count + 1 WHERE id = ?', [id]);
+        await db.query('UPDATE media_posts SET views_count = views_count + 1 WHERE id = $1', [id]);
 
         res.json({
             success: true,
-            data: media[0]
+            data: media.rows[0]
         });
     } catch (error) {
         console.error('Get media error:', error);
@@ -137,7 +138,7 @@ const deleteMedia = async (req, res) => {
         const { id } = req.params;
         const userId = req.user.userId;
 
-        await db.query('DELETE FROM media_posts WHERE id = ? AND user_id = ?', [id, userId]);
+        await db.query('DELETE FROM media_posts WHERE id = $1 AND user_id = $2', [id, userId]);
 
         res.json({
             success: true,
@@ -158,41 +159,41 @@ const toggleLike = async (req, res) => {
         const userId = req.user.userId;
 
         // Check if already liked
-        const [existing] = await db.query(
-            'SELECT id FROM media_likes WHERE media_id = ? AND user_id = ?',
+        const existing = await db.query(
+            'SELECT id FROM media_likes WHERE media_id = $1 AND user_id = $2',
             [id, userId]
         );
 
-        if (existing.length > 0) {
+        if (existing.rows.length > 0) {
             // Unlike
-            await db.query('DELETE FROM media_likes WHERE media_id = ? AND user_id = ?', [id, userId]);
-            await db.query('UPDATE media_posts SET likes_count = likes_count - 1 WHERE id = ?', [id]);
+            await db.query('DELETE FROM media_likes WHERE media_id = $1 AND user_id = $2', [id, userId]);
+            await db.query('UPDATE media_posts SET likes_count = likes_count - 1 WHERE id = $1', [id]);
             
             // Get updated count
-            const [media] = await db.query('SELECT likes_count FROM media_posts WHERE id = ?', [id]);
+            const media = await db.query('SELECT likes_count FROM media_posts WHERE id = $1', [id]);
             
             res.json({
                 success: true,
                 message: 'Media unliked',
                 data: {
                     liked: false,
-                    likes_count: media[0].likes_count
+                    likes_count: media.rows[0].likes_count
                 }
             });
         } else {
             // Like
-            await db.query('INSERT INTO media_likes (media_id, user_id) VALUES (?, ?)', [id, userId]);
-            await db.query('UPDATE media_posts SET likes_count = likes_count + 1 WHERE id = ?', [id]);
+            await db.query('INSERT INTO media_likes (media_id, user_id) VALUES ($1, $2)', [id, userId]);
+            await db.query('UPDATE media_posts SET likes_count = likes_count + 1 WHERE id = $1', [id]);
             
             // Get updated count
-            const [media] = await db.query('SELECT likes_count FROM media_posts WHERE id = ?', [id]);
+            const media = await db.query('SELECT likes_count FROM media_posts WHERE id = $1', [id]);
             
             res.json({
                 success: true,
                 message: 'Media liked',
                 data: {
                     liked: true,
-                    likes_count: media[0].likes_count
+                    likes_count: media.rows[0].likes_count
                 }
             });
         }
@@ -219,18 +220,19 @@ const addComment = async (req, res) => {
             });
         }
 
-        const [result] = await db.query(`
+        const result = await db.query(`
             INSERT INTO media_comments (media_id, user_id, comment)
-            VALUES (?, ?, ?)
+            VALUES ($1, $2, $3)
+            RETURNING id
         `, [id, userId, commentText]);
 
         // Update comment count
-        await db.query('UPDATE media_posts SET comments_count = comments_count + 1 WHERE id = ?', [id]);
+        await db.query('UPDATE media_posts SET comments_count = comments_count + 1 WHERE id = $1', [id]);
 
         res.status(201).json({
             success: true,
             message: 'Comment added',
-            data: { commentId: result.insertId }
+            data: { commentId: result.rows[0].id }
         });
     } catch (error) {
         console.error('Add comment error:', error);
@@ -245,18 +247,18 @@ const getComments = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [comments] = await db.query(`
+        const comments = await db.query(`
             SELECT mc.*, u.full_name, u.profile_pic
             FROM media_comments mc
             INNER JOIN users u ON mc.user_id = u.id
-            WHERE mc.media_id = ?
+            WHERE mc.media_id = $1
             ORDER BY mc.created_at DESC
         `, [id]);
 
         res.json({
             success: true,
-            count: comments.length,
-            data: comments
+            count: comments.rows.length,
+            data: comments.rows
         });
     } catch (error) {
         console.error('Get comments error:', error);

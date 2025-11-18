@@ -20,26 +20,27 @@ const createBookingRequest = async (req, res) => {
             });
         }
 
-        const [result] = await db.query(`
+        const result = await db.query(`
             INSERT INTO booking_requests 
             (request_type, sender_id, receiver_id, event_date, event_time, 
              duration_hours, budget, event_type, special_requirements, message)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            RETURNING id
         `, [requestType, senderId, receiverId, eventDate, eventTime, 
             durationHours, budget, eventType, specialRequirements, message]);
 
         // Create notification for receiver
         await db.query(`
             INSERT INTO notifications (user_id, type, title, message, related_id)
-            VALUES (?, 'booking_request', 'New Booking Request', ?, ?)
-        `, [receiverId, `You have a new booking request for ${eventDate}`, result.insertId]);
+            VALUES ($1, 'booking_request', 'New Booking Request', $2, $3)
+        `, [receiverId, `You have a new booking request for ${eventDate}`, result.rows[0].id]);
 
-        console.log('✅ Booking request created:', result.insertId);
+        console.log('✅ Booking request created:', result.rows[0].id);
 
         res.status(201).json({
             success: true,
             message: 'Booking request sent successfully',
-            data: { bookingId: result.insertId }
+            data: { bookingId: result.rows[0].id }
         });
     } catch (error) {
         console.error('Create booking error:', error);
@@ -54,19 +55,19 @@ const getSentRequests = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [bookings] = await db.query(`
+        const bookings = await db.query(`
             SELECT br.*, 
                    u.full_name as receiver_name, u.profile_pic as receiver_pic, u.user_type as receiver_type
             FROM booking_requests br
             INNER JOIN users u ON br.receiver_id = u.id
-            WHERE br.sender_id = ?
+            WHERE br.sender_id = $1
             ORDER BY br.created_at DESC
         `, [userId]);
 
         res.json({
             success: true,
-            count: bookings.length,
-            data: bookings
+            count: bookings.rows.length,
+            data: bookings.rows
         });
     } catch (error) {
         console.error('Get sent requests error:', error);
@@ -81,19 +82,19 @@ const getReceivedRequests = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [bookings] = await db.query(`
+        const bookings = await db.query(`
             SELECT br.*, 
                    u.full_name as sender_name, u.profile_pic as sender_pic, u.user_type as sender_type
             FROM booking_requests br
             INNER JOIN users u ON br.sender_id = u.id
-            WHERE br.receiver_id = ?
+            WHERE br.receiver_id = $1
             ORDER BY br.created_at DESC
         `, [userId]);
 
         res.json({
             success: true,
-            count: bookings.length,
-            data: bookings
+            count: bookings.rows.length,
+            data: bookings.rows
         });
     } catch (error) {
         console.error('Get received requests error:', error);
@@ -112,33 +113,33 @@ const acceptBooking = async (req, res) => {
         await db.query(`
             UPDATE booking_requests 
             SET status = 'accepted'
-            WHERE id = ? AND receiver_id = ? AND status = 'pending'
+            WHERE id = $1 AND receiver_id = $2 AND status = 'pending'
         `, [id, userId]);
 
         // Get booking details
-        const [bookings] = await db.query('SELECT sender_id, receiver_id FROM booking_requests WHERE id = ?', [id]);
+        const bookings = await db.query('SELECT sender_id, receiver_id FROM booking_requests WHERE id = $1', [id]);
         
-        if (bookings.length > 0) {
-            const senderId = bookings[0].sender_id;
-            const receiverId = bookings[0].receiver_id;
+        if (bookings.rows.length > 0) {
+            const senderId = bookings.rows[0].sender_id;
+            const receiverId = bookings.rows[0].receiver_id;
 
             // Create notification
             await db.query(`
                 INSERT INTO notifications (user_id, type, title, message, related_id)
-                VALUES (?, 'booking_accepted', 'Booking Accepted', 'Your booking request has been accepted!', ?)
+                VALUES ($1, 'booking_accepted', 'Booking Accepted', 'Your booking request has been accepted!', $2)
             `, [senderId, id]);
 
             // Create or get conversation between the two users
-            const [existingConv] = await db.query(`
+            const existingConv = await db.query(`
                 SELECT id FROM chat_conversations
-                WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)
+                WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $3 AND user2_id = $4)
             `, [senderId, receiverId, receiverId, senderId]);
 
-            if (existingConv.length === 0) {
+            if (existingConv.rows.length === 0) {
                 // Create new conversation
                 await db.query(`
                     INSERT INTO chat_conversations (user1_id, user2_id, last_message, last_message_time)
-                    VALUES (?, ?, 'Booking accepted - You can now chat!', NOW())
+                    VALUES ($1, $2, 'Booking accepted - You can now chat!', CURRENT_TIMESTAMP)
                 `, [senderId, receiverId]);
                 
                 console.log('✅ Chat conversation created for accepted booking');
@@ -166,16 +167,16 @@ const rejectBooking = async (req, res) => {
         await db.query(`
             UPDATE booking_requests 
             SET status = 'rejected'
-            WHERE id = ? AND receiver_id = ? AND status = 'pending'
+            WHERE id = $1 AND receiver_id = $2 AND status = 'pending'
         `, [id, userId]);
 
-        const [bookings] = await db.query('SELECT sender_id FROM booking_requests WHERE id = ?', [id]);
+        const bookings = await db.query('SELECT sender_id FROM booking_requests WHERE id = $1', [id]);
         
-        if (bookings.length > 0) {
+        if (bookings.rows.length > 0) {
             await db.query(`
                 INSERT INTO notifications (user_id, type, title, message, related_id)
-                VALUES (?, 'booking_rejected', 'Booking Declined', 'Your booking request was declined.', ?)
-            `, [bookings[0].sender_id, id]);
+                VALUES ($1, 'booking_rejected', 'Booking Declined', 'Your booking request was declined.', $2)
+            `, [bookings.rows[0].sender_id, id]);
         }
 
         res.json({
@@ -199,7 +200,7 @@ const cancelBooking = async (req, res) => {
         await db.query(`
             UPDATE booking_requests 
             SET status = 'cancelled'
-            WHERE id = ? AND sender_id = ?
+            WHERE id = $1 AND sender_id = $2
         `, [id, userId]);
 
         res.json({
@@ -222,7 +223,7 @@ const completeBooking = async (req, res) => {
         await db.query(`
             UPDATE booking_requests 
             SET status = 'completed'
-            WHERE id = ?
+            WHERE id = $1
         `, [id]);
 
         res.json({
@@ -245,38 +246,38 @@ const addReview = async (req, res) => {
         const { rating, reviewText } = req.body;
 
         // Get booking details
-        const [bookings] = await db.query(`
-            SELECT sender_id, receiver_id FROM booking_requests WHERE id = ?
+        const bookings = await db.query(`
+            SELECT sender_id, receiver_id FROM booking_requests WHERE id = $1
         `, [id]);
 
-        if (bookings.length === 0) {
+        if (bookings.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Booking not found'
             });
         }
 
-        const reviewedId = bookings[0].sender_id === reviewerId ? 
-            bookings[0].receiver_id : bookings[0].sender_id;
+        const reviewedId = bookings.rows[0].sender_id === reviewerId ? 
+            bookings.rows[0].receiver_id : bookings.rows[0].sender_id;
 
         await db.query(`
             INSERT INTO reviews (reviewer_id, reviewed_id, booking_id, rating, review_text)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5)
         `, [reviewerId, reviewedId, id, rating, reviewText]);
 
         // Update average rating
-        const [avgRating] = await db.query(`
-            SELECT AVG(rating) as avg_rating FROM reviews WHERE reviewed_id = ?
+        const avgRating = await db.query(`
+            SELECT AVG(rating) as avg_rating FROM reviews WHERE reviewed_id = $1
         `, [reviewedId]);
 
-        const [userType] = await db.query('SELECT user_type FROM users WHERE id = ?', [reviewedId]);
+        const userType = await db.query('SELECT user_type FROM users WHERE id = $1', [reviewedId]);
 
-        if (userType[0].user_type === 'artist') {
-            await db.query('UPDATE artist_profiles SET rating = ? WHERE user_id = ?', 
-                [avgRating[0].avg_rating, reviewedId]);
+        if (userType.rows[0].user_type === 'artist') {
+            await db.query('UPDATE artist_profiles SET rating = $1 WHERE user_id = $2', 
+                [avgRating.rows[0].avg_rating, reviewedId]);
         } else {
-            await db.query('UPDATE venue_profiles SET rating = ? WHERE user_id = ?', 
-                [avgRating[0].avg_rating, reviewedId]);
+            await db.query('UPDATE venue_profiles SET rating = $1 WHERE user_id = $2', 
+                [avgRating.rows[0].avg_rating, reviewedId]);
         }
 
         res.json({
